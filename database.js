@@ -1,17 +1,8 @@
-// https://freesoft.dev/program/155608432
+// https://github.com/cvburgess/SQLDataSource
 
 const { SQLDataSource } = require('datasource-sql');
 
 const MINUTE = 60;
-
-// const knex = Knex({
-//     client: 'sqlite3',
-//     connection: {
-//         /* CONNECTION INFO */
-//         filename: './data/db.sqlite3',
-//     },
-//     useNullAsDefault: true,
-// });
 
 class Database extends SQLDataSource {
     // for building initial pages
@@ -23,24 +14,6 @@ class Database extends SQLDataSource {
     }
 
     async getSinglePokemonName(pokemonId) {
-        // const queryRes = await this.knex
-        //     .first()
-        //     .select(
-        //         'p.name',
-        //         'p.height',
-        //         'p.weight',
-        //         'p.base_experience',
-        //         'ps.is_baby',
-        //         'ps.gender_rate'
-        //     )
-        //     .from('pokemon_v2_pokemon as p')
-        //     .innerJoin(
-        //         'pokemon_v2_pokemonspecies as ps',
-        //         'p.pokemon_species_id',
-        //         'ps.id'
-        //     )
-        //     .where('p.id', pokemonId);
-
         const queryRes = await this.knex
             .first()
             .select('p.name')
@@ -152,6 +125,145 @@ class Database extends SQLDataSource {
             .where('p.id', pokemonId);
 
         return queryRes;
+    }
+
+    async getSinglePokemonGenus(pokemonId) {
+        const queryRes = await this.knex
+            .first()
+            .select('psn.genus')
+            .from('pokemon_v2_pokemonspeciesname as psn')
+            .innerJoin(
+                'pokemon_v2_pokemon as p',
+                'p.pokemon_species_id',
+                'psn.pokemon_species_id'
+            )
+            .where('p.id', pokemonId)
+            .where('psn.language_id', 9); // language_id for US English is 9
+
+        return queryRes.genus;
+    }
+
+    async getSinglePokemonGenderRate(pokemonId) {
+        const queryRes = await this.knex
+            .first()
+            .select('ps.gender_rate')
+            .from('pokemon_v2_pokemonspecies as ps')
+            .innerJoin(
+                'pokemon_v2_pokemon as p',
+                'p.pokemon_species_id',
+                'ps.id'
+            )
+            .where('p.id', pokemonId);
+
+        const genderRatePercent =
+            queryRes.gender_rate === -1 ? -1 : (queryRes.gender_rate / 8) * 100;
+
+        return genderRatePercent;
+    }
+
+    async getSinglePokemonTypeIds(pokemonId) {
+        const queryRes = await this.knex
+            .select('t.type_id')
+            .from('pokemon_v2_pokemontype as t')
+            .where('t.pokemon_id', pokemonId);
+
+        const typeIds = queryRes.map((typeObj) => typeObj.type_id);
+
+        return typeIds;
+    }
+
+    async getTypeName(typeId) {
+        const queryRes = await this.knex
+            .first()
+            .select('t.name', 't.type_id')
+            .from('pokemon_v2_typename as t')
+            .where('t.type_id', typeId)
+            .where('t.language_id', 9);
+
+        return queryRes.name;
+    }
+
+    async getTypeDoubleDamageFromIds(typeId) {
+        const queryRes = await this.knex
+            .select('te.damage_type_id')
+            .from('pokemon_v2_typeefficacy as te')
+            .where('te.damage_factor', 200) // 200 = x2 damage
+            .where('te.target_type_id', typeId);
+
+        const typeIds = queryRes.map((typeObj) => typeObj.damage_type_id);
+
+        return typeIds;
+    }
+
+    async getTypeHalfDamageFromIds(typeId) {
+        const queryRes = await this.knex
+            .select('te.damage_type_id')
+            .from('pokemon_v2_typeefficacy as te')
+            .where('te.damage_factor', 50) // 50 = 1/2 damage
+            .where('te.target_type_id', typeId);
+
+        const typeIds = queryRes.map((typeObj) => typeObj.damage_type_id);
+
+        return typeIds;
+    }
+
+    async getTypeNoDamageFromIds(typeId) {
+        const queryRes = await this.knex
+            .select('te.damage_type_id')
+            .from('pokemon_v2_typeefficacy as te')
+            .where('te.damage_factor', 0) // 0 = no damage
+            .where('te.target_type_id', typeId);
+
+        const typeIds = queryRes.map((typeObj) => typeObj.damage_type_id);
+
+        return typeIds;
+    }
+
+    async getTypeDoubleDamageToIds(typeId) {
+        const queryRes = await this.knex
+            .select('te.target_type_id')
+            .from('pokemon_v2_typeefficacy as te')
+            .where('te.damage_factor', 200)
+            .where('te.damage_type_id', typeId);
+
+        const typeIds = queryRes.map((typeObj) => typeObj.target_type_id);
+
+        return typeIds;
+    }
+
+    async getTypeHalfDamageToIds(typeId) {
+        const queryRes = await this.knex
+            .select('te.target_type_id')
+            .from('pokemon_v2_typeefficacy as te')
+            .where('te.damage_factor', 50)
+            .where('te.damage_type_id', typeId);
+
+        const typeIds = queryRes.map((typeObj) => typeObj.target_type_id);
+
+        return typeIds;
+    }
+
+    async getTypeNoDamageToIds(typeId) {
+        const queryRes = await this.knex
+            .select('te.target_type_id')
+            .from('pokemon_v2_typeefficacy as te')
+            .where('te.damage_factor', 0)
+            .where('te.damage_type_id', typeId);
+
+        const typeIds = queryRes.map((typeObj) => typeObj.target_type_id);
+
+        return typeIds;
+    }
+
+    async getPokemonIdsForType(typeId) {
+        const queryRes = await this.knex
+            .select('t.pokemon_id')
+            .from('pokemon_v2_pokemontype as t')
+            .where('t.type_id', typeId);
+
+        const typeIds = queryRes.map((typeObj) => typeObj.pokemon_id);
+
+        return typeIds;
     }
 }
 
