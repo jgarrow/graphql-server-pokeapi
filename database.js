@@ -161,6 +161,8 @@ class Database extends SQLDataSource {
         return genderRatePercent;
     }
 
+    // Type methods
+
     async getSinglePokemonTypeIds(pokemonId) {
         const queryRes = await this.knex
             .select('t.type_id')
@@ -264,6 +266,55 @@ class Database extends SQLDataSource {
         const typeIds = queryRes.map((typeObj) => typeObj.pokemon_id);
 
         return typeIds;
+    }
+
+    // Egg group methods
+
+    async getSinglePokemonEggGroupIds(pokemonId) {
+        const queryRes = await this.knex
+            .select('eg.egg_group_id')
+            .from('pokemon_v2_pokemonegggroup as eg')
+            .innerJoin(
+                'pokemon_v2_pokemon as p',
+                'p.pokemon_species_id',
+                'eg.pokemon_species_id'
+            )
+            .where('p.id', pokemonId);
+
+        const eggGroupIds = queryRes.map(
+            (eggGroupObj) => eggGroupObj.egg_group_id
+        );
+
+        return eggGroupIds;
+    }
+
+    async getEggGroupName(eggGroupId) {
+        const queryRes = await this.knex
+            .first()
+            .select('egn.name')
+            .from('pokemon_v2_egggroupname as egn')
+            .where('egn.egg_group_id', eggGroupId)
+            .where('egn.language_id', 9);
+
+        return queryRes.name;
+    }
+
+    async getEggGroupPokemonIds(eggGroupId) {
+        // egg_group_id and pokemon_species_id from pokemon_v2_pokemonegggroup
+
+        const queryRes = await this.knex
+            .select('p.id')
+            .from('pokemon_v2_pokemon as p')
+            .innerJoin(
+                'pokemon_v2_pokemonegggroup as eg',
+                'eg.pokemon_species_id',
+                'p.pokemon_species_id'
+            )
+            .where('eg.egg_group_id', eggGroupId);
+
+        const pokemonIds = queryRes.map((pokemon) => pokemon.id);
+
+        return pokemonIds;
     }
 }
 

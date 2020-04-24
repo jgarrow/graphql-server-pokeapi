@@ -38,6 +38,9 @@ const resolvers = {
         types: (parent, args, { dataSources }) => {
             return dataSources.db.getSinglePokemonTypeIds(parent);
         },
+        egg_groups: (parent, args, { dataSources }) => {
+            return dataSources.db.getSinglePokemonEggGroupIds(parent);
+        },
     },
     Stats: {
         hp: (parent, args, { dataSources }) => {
@@ -90,6 +93,15 @@ const resolvers = {
         },
         pokemon: (parent, args, { dataSources }) => {
             return dataSources.db.getPokemonIdsForType(parent);
+        },
+    },
+    EggGroup: {
+        id: (parent, args, { dataSources }) => parent,
+        name: (parent, args, { dataSources }) => {
+            return dataSources.db.getEggGroupName(parent);
+        },
+        pokemon: (parent, args, { dataSources }) => {
+            return dataSources.db.getEggGroupPokemonIds(parent);
         },
     },
 };
