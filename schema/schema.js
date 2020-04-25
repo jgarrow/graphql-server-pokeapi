@@ -6,7 +6,6 @@ const typeDefs = gql`
         pokedex_entries: [DexEntry] # array of DexEntry objects
         evolution_criteria: [EvolutionCriteria]
         evolution_trigger: String
-
         evolves_to: [Pokemon]
         evolves_from: Pokemon
         moves(game: String!): [Move] # array of Move objects
@@ -82,7 +81,7 @@ const typeDefs = gql`
 
     type DexEntry {
         description: String
-        game: String # game/version this entry is from
+        game: Game # game/version this entry is from
     }
 
     type Move {
@@ -102,7 +101,7 @@ const typeDefs = gql`
         damage_class: String # physical or special
         description: String
         # description: MoveDescription
-        # games: [Game]
+        original_games: [Game]
     }
 
     type MoveLearnMethod {

@@ -707,11 +707,6 @@ class Database extends SQLDataSource {
     }
 
     async getMoveDescription(moveId, gameName) {
-        // pokemon_v2_moveflavortext as mft
-        // mft.move_id, mft.flavor_text, mft.version_group_id
-        // pokemon_v2_version as v
-        // console.log('moveId: ', moveId);
-        // console.log('gameName: ', gameName);
         const queryRes = await this.knex
             .select('mft.flavor_text')
             .from('pokemon_v2_moveflavortext as mft')
@@ -795,7 +790,163 @@ class Database extends SQLDataSource {
         return queryRes.level;
     }
 
+    // games the move debuted in (not tied to a specific Pokemon)
+    async getMoveGameIds(moveId) {
+        const queryRes = await this.knex
+            .select('v.id')
+            .from('pokemon_v2_version as v')
+            .innerJoin(
+                'pokemon_v2_versiongroup as vg',
+                'vg.id',
+                'v.version_group_id'
+            )
+            .innerJoin(
+                'pokemon_v2_move as m',
+                'm.generation_id',
+                'vg.generation_id'
+            )
+            .where('m.id', moveId);
+
+        const gameIds = queryRes.map((gameObj) => gameObj.id);
+        return gameIds;
+    }
+
     // Evolution methods
+
+    // not the best way to get them, but it works at least for now
+    async getSinglePokemonEvolutionCriteria(pokemonId) {
+        const queryRes = await this.knex
+            .select(
+                'pe.min_level',
+                'pe.time_of_day',
+                'pe.min_happiness',
+                'pe.min_beauty',
+                'pe.min_affection',
+                'pe.needs_overworld_rain',
+                'pe.turn_upside_down',
+                'pe.gender_id',
+                'pe.known_move_id',
+                'pe.known_move_type_id',
+                'pe.evolution_item_id',
+                'pe.held_item_id',
+                'pe.location_id'
+            )
+            .from('pokemon_v2_pokemonevolution as pe')
+            .innerJoin(
+                'pokemon_v2_pokemon as p',
+                'p.pokemon_species_id',
+                'pe.evolved_species_id'
+            )
+            .where('p.id', pokemonId);
+
+        const evolutionCriteriaPromise = queryRes
+            .map((criteriaObj) => {
+                console.log('criteriaObj: ', criteriaObj);
+                const criteriaKeys = Object.keys(criteriaObj).filter(
+                    (key) => criteriaObj[key] && criteriaObj[key] !== ''
+                );
+
+                return criteriaKeys
+                    .map(async (key) => {
+                        const returnObj = {
+                            name: key,
+                            value:
+                                typeof criteriaObj[key] === 'object'
+                                    ? criteriaObj[key].name
+                                    : criteriaObj[key].toString(),
+                        };
+
+                        // for the keys that are ids, get their names
+                        if (
+                            key === 'held_item_id' ||
+                            key === 'evolution_item_id'
+                        ) {
+                            const itemQueryRes = await this.knex
+                                .first()
+                                .select('i.name')
+                                .from('pokemon_v2_item as i')
+                                .where('i.id', criteriaObj[key]);
+
+                            returnObj.value = itemQueryRes.name;
+                        } else if (key === 'known_move_id') {
+                            const moveQueryRes = await this.knex
+                                .first()
+                                .select('mn.name')
+                                .from('pokemon_v2_movename as mn')
+                                .where('mn.move_id', criteriaObj[key])
+                                .where('mn.language_id', 9);
+
+                            returnObj.value = moveQueryRes.name;
+                        } else if (key === 'known_move_type_id') {
+                            const moveTypeQueryRes = await this.knex
+                                .first()
+                                .select('t.name')
+                                .from('pokemon_v2_typename as t')
+                                .innerJoin(
+                                    'pokemon_v2_move as m',
+                                    'm.type_id',
+                                    't.type_id'
+                                )
+                                .where('m.type_id', criteriaObj[key])
+                                .where('t.language_id', 9);
+
+                            returnObj.value = moveTypeQueryRes.name;
+                        } else if (key === 'location_id') {
+                            const locationNameQueryRes = await this.knex
+                                .first()
+                                .select('l.name')
+                                .from('pokemon_v2_location as l')
+                                .where('l.id', criteriaObj[key]);
+
+                            returnObj.value = locationNameQueryRes.name;
+                        } else if (key === 'gender_id') {
+                            const genderQueryRes = await this.knex
+                                .first()
+                                .select('g.name')
+                                .from('pokemon_v2_gender as g')
+                                .where('g.id', criteriaObj[key]);
+
+                            returnObj.value = genderQueryRes.name;
+                        }
+
+                        const parsedKey = key.split('_');
+
+                        if (parsedKey[parsedKey.length - 1] === 'id') {
+                            returnObj.name = key.slice(0, -3);
+                        }
+
+                        return returnObj;
+                    })
+                    .flat();
+            })
+            .flat();
+
+        const evolutionCriteria = await Promise.all(evolutionCriteriaPromise);
+
+        return evolutionCriteria.length ? evolutionCriteria : null;
+    }
+
+    async getSinglePokemonEvolutionTrigger(pokemonId) {
+        const queryRes = await this.knex
+            .first()
+            .select('et.name')
+            .from('pokemon_v2_evolutiontrigger as et')
+            .innerJoin(
+                'pokemon_v2_pokemonevolution as pe',
+                'pe.evolution_trigger_id',
+                'et.id'
+            )
+            .innerJoin(
+                'pokemon_v2_pokemon as p',
+                'p.pokemon_species_id',
+                'pe.evolved_species_id'
+            )
+            .where('p.id', pokemonId);
+
+        console.log('queryRes: ', queryRes);
+
+        return queryRes ? queryRes.name : null;
+    }
 
     async getSinglePokemonEvolvesFromPokemonId(pokemonId) {
         const evolvesFromSpeciesId = this.knex
@@ -831,9 +982,51 @@ class Database extends SQLDataSource {
             )
             .where('ps.evolves_from_species_id', pokemonId);
 
-        // console.log('queryRes: ', queryRes);
         const pokemonIds = queryRes.map((pokemonObj) => pokemonObj.id);
         return pokemonIds.length ? pokemonIds : null;
+    }
+
+    // Pokedex entry methods
+
+    async getSinglePokemonPokedexEntries(pokemonId) {
+        const queryRes = await this.knex
+            .select('ft.flavor_text', 'v.id')
+            .from('pokemon_v2_pokemonspeciesflavortext as ft')
+            .innerJoin(
+                'pokemon_v2_pokemon as p',
+                'p.pokemon_species_id',
+                'ft.pokemon_species_id'
+            )
+            .innerJoin('pokemon_v2_version as v', 'v.id', 'ft.version_id')
+            .where('ft.language_id', 9)
+            .where('p.id', pokemonId);
+
+        const dexEntries = queryRes.map((entry) => {
+            // make all whitespace consistent
+            entry.flavor_text = entry.flavor_text.replace(/\s/gm, ' ');
+
+            return { description: entry.flavor_text, gameId: entry.id };
+        });
+
+        return dexEntries;
+    }
+
+    // database isn't updated -- there are image files, but a lot of entries in the db still have null values
+    // this will return a file path regardless of whether or not there is an image at that path
+    // will have to check on client side if exists
+    async getSinglePokemonSprites(pokemonId) {
+        const baseFilePath = '~/Dev/pokedex/server/media/sprites/pokemon';
+
+        return {
+            front_default: `${baseFilePath}/${pokemonId}.png`,
+            front_female: `${baseFilePath}/female/${pokemonId}.png`,
+            front_shiny: `${baseFilePath}/shiny/${pokemonId}.png`,
+            front_shiny_female: `${baseFilePath}/shiny/female/${pokemonId}.png`,
+            back_default: `${baseFilePath}/back/${pokemonId}.png`,
+            back_female: `${baseFilePath}/back/female/${pokemonId}.png`,
+            back_shiny: `${baseFilePath}/back/shiny/${pokemonId}.png`,
+            back_shiny_female: `${baseFilePath}/back/shiny/female/${pokemonId}.png`,
+        };
     }
 }
 

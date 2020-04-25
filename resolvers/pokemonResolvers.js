@@ -41,6 +41,9 @@ const resolvers = {
         egg_groups: (parent, args, { dataSources }) => {
             return dataSources.db.getSinglePokemonEggGroupIds(parent);
         },
+        sprites: (parent, args, { dataSources }) => {
+            return dataSources.db.getSinglePokemonSprites(parent);
+        },
         abilities: async (parent, args, { dataSources }) => {
             const abilityIds = await dataSources.db.getSinglePokemonAbilityIds(
                 parent
@@ -62,15 +65,11 @@ const resolvers = {
             return dataSources.db.getSinglePokemonLocationIds(parent);
         },
         moves: async (parent, args, { dataSources }) => {
-            // console.log('parent: ', parent);
-            // console.log('args: ', args);
-
             const moveIds = await dataSources.db.getSinglePokemonMoveIds(
                 parent,
                 args.game
             );
 
-            // console.log('moveIds: ', moveIds);
             const idsArray = moveIds.map((moveId) => {
                 return {
                     pokemonId: parent,
@@ -78,7 +77,6 @@ const resolvers = {
                     gameName: args.game,
                 };
             });
-            // console.log('idsArray: ', idsArray);
 
             return idsArray;
         },
@@ -87,6 +85,15 @@ const resolvers = {
         },
         evolves_to: (parent, args, { dataSources }) => {
             return dataSources.db.getSinglePokemonEvolvesToPokemonId(parent);
+        },
+        evolution_trigger: (parent, args, { dataSources }) => {
+            return dataSources.db.getSinglePokemonEvolutionTrigger(parent);
+        },
+        evolution_criteria: (parent, args, { dataSources }) => {
+            return dataSources.db.getSinglePokemonEvolutionCriteria(parent);
+        },
+        pokedex_entries: (parent, args, { dataSources }) => {
+            return dataSources.db.getSinglePokemonPokedexEntries(parent);
         },
     },
     Stats: {
@@ -244,14 +251,12 @@ const resolvers = {
             return dataSources.db.getMoveEffect(parent.moveId);
         },
         description: (parent, args, { dataSources }) => {
-            // console.log('parent: ', parent);
             return dataSources.db.getMoveDescription(
                 parent.moveId,
                 parent.gameName
             );
         },
         learn_method: (parent, args, { dataSources }) => {
-            // console.log('parent: ', parent);
             return dataSources.db.getSinglePokemonMoveLearnMethod(
                 parent.pokemonId,
                 parent.moveId,
@@ -259,13 +264,19 @@ const resolvers = {
             );
         },
         level_learned_at: (parent, args, { dataSources }) => {
-            // console.log('parent: ', parent);
             return dataSources.db.getSinglePokemonMoveLevelLearnedAt(
                 parent.pokemonId,
                 parent.moveId,
                 parent.gameName
             );
         },
+        original_games: (parent, args, { dataSources }) => {
+            return dataSources.db.getMoveGameIds(parent.moveId);
+        },
+    },
+    DexEntry: {
+        description: (parent, args, { dataSources }) => parent.description,
+        game: (parent, args, { dataSources }) => parent.gameId,
     },
 };
 
