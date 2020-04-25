@@ -1,7 +1,42 @@
 const resolvers = {
     Query: {
-        allPokemonObjects: (parent, args, { dataSources }) => {},
+        allPokemon: (parent, args, { dataSources }) => {
+            return dataSources.db.getAllPokemonIds();
+        },
+        allAbilities: (parent, args, { dataSources }) => {
+            return dataSources.db.getAllAbilityIds();
+        },
+        allTypes: (parent, args, { dataSources }) => {
+            return dataSources.db.getAllTypeIds();
+        },
+        allEggGroups: (parent, args, { dataSources }) => {
+            return dataSources.db.getAllEggGroupIds();
+        },
+        allLocations: (parent, args, { dataSources }) => {
+            return dataSources.db.getAllLocationIds();
+        },
+        allMoves: (parent, args, { dataSources }) => {
+            return dataSources.db.getAllMoveIds();
+        },
+        allRegions: (parent, args, { dataSources }) => {
+            return dataSources.db.getAllRegionIds();
+        },
+        allGames: (parent, args, { dataSources }) => {
+            return dataSources.db.getAllGameIds();
+        },
         pokemon: (parent, args, { dataSources }) => args.id,
+        game: (parent, args, { dataSources }) => args.id,
+        region: (parent, args, { dataSources }) => args.id,
+        move: (parent, args, { dataSources }) => {
+            return { moveId: args.id };
+        },
+        location: (parent, args, { dataSources }) => args.id,
+        type: (parent, args, { dataSources }) => args.id,
+        eggGroup: (parent, args, { dataSources }) => args.id,
+        ability: (parent, args, { dataSources }) => {
+            return { abilityId: args.id };
+        },
+        type: (parent, args, { dataSources }) => args.id,
     },
     Pokemon: {
         id: (parent, args, { dataSources }) => parent,
@@ -213,6 +248,9 @@ const resolvers = {
         },
         games: (parent, args, { dataSources }) => {
             return dataSources.db.getLocationGameIds(parent);
+        },
+        region: (parent, args, { dataSources }) => {
+            return dataSources.db.getLocationRegionId(parent);
         },
         pokemon: (parent, args, { dataSources }) => {
             return dataSources.db.getLocationPokemonIds(parent);

@@ -2,15 +2,38 @@
 
 const { SQLDataSource } = require('datasource-sql');
 
-const MINUTE = 60;
+const MINUTE = 60 * 1000;
 
 class Database extends SQLDataSource {
-    // for building initial pages
-    getAllPokemonNamesAndIds() {
-        return this.knex
-            .select('name', 'id')
+    async getAllPokemonIds() {
+        const queryRes = await this.knex
+            .select('id')
             .from('pokemon_v2_pokemon')
             .cache(MINUTE);
+
+        const pokemonIds = queryRes.map((pokemon) => pokemon.id);
+
+        return pokemonIds;
+    }
+
+    async getAllAbilityIds() {
+        const queryRes = await this.knex
+            .select('id')
+            .from('pokemon_v2_ability');
+
+        const abilityIds = queryRes.map((ability) => {
+            return { abilityId: ability.id };
+        });
+
+        return abilityIds;
+    }
+
+    async getAllTypeIds() {
+        const queryRes = await this.knex.select('id').from('pokemon_v2_type');
+
+        const typeIds = queryRes.map((type) => type.id);
+
+        return typeIds;
     }
 
     async getSinglePokemonName(pokemonId) {
@@ -21,6 +44,54 @@ class Database extends SQLDataSource {
             .where({ id: pokemonId });
 
         return queryRes.name;
+    }
+
+    async getAllEggGroupIds() {
+        const queryRes = await this.knex
+            .select('id')
+            .from('pokemon_v2_egggroup');
+
+        const eggGroupIds = queryRes.map((eggGroup) => eggGroup.id);
+
+        return eggGroupIds;
+    }
+
+    async getAllLocationIds() {
+        const queryRes = await this.knex
+            .select('id')
+            .from('pokemon_v2_location');
+
+        const locationIds = queryRes.map((location) => location.id);
+
+        return locationIds;
+    }
+
+    async getAllMoveIds() {
+        const queryRes = await this.knex.select('id').from('pokemon_v2_move');
+
+        const moveIds = queryRes.map((move) => {
+            return { moveId: move.id };
+        });
+
+        return moveIds;
+    }
+
+    async getAllGameIds() {
+        const queryRes = await this.knex
+            .select('id')
+            .from('pokemon_v2_version');
+
+        const gameIds = queryRes.map((game) => game.id);
+
+        return gameIds;
+    }
+
+    async getAllRegionIds() {
+        const queryRes = await this.knex.select('id').from('pokemon_v2_region');
+
+        const regionIds = queryRes.map((region) => region.id);
+
+        return regionIds;
     }
 
     async getSinglePokemonHeight(pokemonId) {
@@ -300,8 +371,6 @@ class Database extends SQLDataSource {
     }
 
     async getEggGroupPokemonIds(eggGroupId) {
-        // egg_group_id and pokemon_species_id from pokemon_v2_pokemonegggroup
-
         const queryRes = await this.knex
             .select('p.id')
             .from('pokemon_v2_pokemon as p')
@@ -457,6 +526,7 @@ class Database extends SQLDataSource {
     // Region methods
 
     async getRegionName(regionId) {
+        console.log('regionId: ', regionId);
         const queryRes = await this.knex
             .first()
             .select('rn.name')
@@ -496,7 +566,6 @@ class Database extends SQLDataSource {
 
     // Location methods
     async getSinglePokemonLocationIds(pokemonId) {
-        // pokemon_v2_encounter.location_area_id
         const queryRes = await this.knex
             .select('la.location_id')
             .from('pokemon_v2_locationarea as la')
@@ -537,9 +606,6 @@ class Database extends SQLDataSource {
     }
 
     async getLocationGameIds(locationId) {
-        // pokemon_v2_location.region_id
-        // pokemon_v2_versiongroupregion.version_group_id, .region_id
-        // pokemon_v2_version.id, version_group_id
         const queryRes = await this.knex
             .select('v.id')
             .from('pokemon_v2_version as v')
@@ -557,7 +623,7 @@ class Database extends SQLDataSource {
 
         const gameIds = queryRes.map((gameObj) => gameObj.id);
 
-        return gameIds;
+        return gameIds.length ? gameIds : null;
     }
 
     async getLocationPokemonIds(locationId) {
@@ -578,10 +644,6 @@ class Database extends SQLDataSource {
 
     // Move methods
     async getSinglePokemonMoveIds(pokemonId, gameName) {
-        // pokemon_v2_pokemonmove as pm
-        // pm.pokemon_id, pm.move_id, pm.version_group_id
-        // pokemon_v2_version as v
-        // v.version_group_id, v.id
         const queryRes = await this.knex
             .select('pm.move_id')
             .from('pokemon_v2_pokemonmove as pm')
@@ -748,10 +810,6 @@ class Database extends SQLDataSource {
     }
 
     async getSinglePokemonMoveLearnMethod(pokemonId, moveId, gameName) {
-        // pokemon_v2_pokemonmove as pm
-        // pm.move_learn_method_id, pm.pokemon_id, pm.move_id, pm.version_group_id
-        //
-
         const queryRes = await this.knex
             .first()
             .select('mlm.name')
@@ -841,7 +899,6 @@ class Database extends SQLDataSource {
 
         const evolutionCriteriaPromise = queryRes
             .map((criteriaObj) => {
-                console.log('criteriaObj: ', criteriaObj);
                 const criteriaKeys = Object.keys(criteriaObj).filter(
                     (key) => criteriaObj[key] && criteriaObj[key] !== ''
                 );
@@ -942,8 +999,6 @@ class Database extends SQLDataSource {
                 'pe.evolved_species_id'
             )
             .where('p.id', pokemonId);
-
-        console.log('queryRes: ', queryRes);
 
         return queryRes ? queryRes.name : null;
     }

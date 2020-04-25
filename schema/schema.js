@@ -145,14 +145,14 @@ const typeDefs = gql`
 
     type Query {
         allPokemonNamesAndIds(start: Int, end: Int): [NameAndId]
-        allPokemonObjects(start: Int, end: Int): [Pokemon] # get range of pokemon starting from start variable
-        allAbilities(start: Int, end: Int): [Ability]
+        allPokemon: [Pokemon] # get range of pokemon starting from start variable
+        allAbilities: [Ability]
         allTypes(start: Int, end: Int): [Type]
-        allEggGroups(start: Int, end: Int): [EggGroup]
-        allLocations(start: Int, end: Int): [Location]
-        allMoves(start: Int, end: Int): [Move]
-        allRegions(start: Int, end: Int): [Region]
-        allGames(start: Int, end: Int): [Game]
+        allEggGroups: [EggGroup]
+        allLocations: [Location]
+        allMoves: [Move]
+        allRegions: [Region]
+        allGames: [Game]
         # game(name: String!): [Pokemon] # get pokemon from a specific game
         # generation(generationNumber: Int!): [Pokemon] # get pokemon from specific generation regardless of game
         pokemon(id: Int!): Pokemon
