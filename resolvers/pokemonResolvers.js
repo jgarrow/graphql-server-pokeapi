@@ -61,6 +61,27 @@ const resolvers = {
         locations: (parent, args, { dataSources }) => {
             return dataSources.db.getSinglePokemonLocationIds(parent);
         },
+        moves: async (parent, args, { dataSources }) => {
+            // console.log('parent: ', parent);
+            // console.log('args: ', args);
+
+            const moveIds = await dataSources.db.getSinglePokemonMoveIds(
+                parent,
+                args.game
+            );
+
+            // console.log('moveIds: ', moveIds);
+            const idsArray = moveIds.map((moveId) => {
+                return {
+                    pokemonId: parent,
+                    moveId: moveId,
+                    gameName: args.game,
+                };
+            });
+            // console.log('idsArray: ', idsArray);
+
+            return idsArray;
+        },
     },
     Stats: {
         hp: (parent, args, { dataSources }) => {
@@ -182,6 +203,62 @@ const resolvers = {
         },
         pokemon: (parent, args, { dataSources }) => {
             return dataSources.db.getLocationPokemonIds(parent);
+        },
+    },
+    Move: {
+        id: (parent, args, { dataSources }) => parent.moveId,
+        name: (parent, args, { dataSources }) => {
+            return dataSources.db.getMoveName(parent.moveId);
+        },
+        type: (parent, args, { dataSources }) => {
+            return dataSources.db.getMoveTypeId(parent.moveId);
+        },
+        power: (parent, args, { dataSources }) => {
+            return dataSources.db.getMovePower(parent.moveId);
+        },
+        pp: (parent, args, { dataSources }) => {
+            return dataSources.db.getMovePp(parent.moveId);
+        },
+        accuracy: (parent, args, { dataSources }) => {
+            return dataSources.db.getMoveAccuracy(parent.moveId);
+        },
+        priority: (parent, args, { dataSources }) => {
+            return dataSources.db.getMovePriority(parent.moveId);
+        },
+        damage_class: (parent, args, { dataSources }) => {
+            return dataSources.db.getMoveDamageClass(parent.moveId);
+        },
+        ailment: (parent, args, { dataSources }) => {
+            return dataSources.db.getMoveAilment(parent.moveId);
+        },
+        effect_chance: (parent, args, { dataSources }) => {
+            return dataSources.db.getMoveEffectChance(parent.moveId);
+        },
+        effect: (parent, args, { dataSources }) => {
+            return dataSources.db.getMoveEffect(parent.moveId);
+        },
+        description: (parent, args, { dataSources }) => {
+            // console.log('parent: ', parent);
+            return dataSources.db.getMoveDescription(
+                parent.moveId,
+                parent.gameName
+            );
+        },
+        learn_method: (parent, args, { dataSources }) => {
+            // console.log('parent: ', parent);
+            return dataSources.db.getSinglePokemonMoveLearnMethod(
+                parent.pokemonId,
+                parent.moveId,
+                parent.gameName
+            );
+        },
+        level_learned_at: (parent, args, { dataSources }) => {
+            // console.log('parent: ', parent);
+            return dataSources.db.getSinglePokemonMoveLevelLearnedAt(
+                parent.pokemonId,
+                parent.moveId,
+                parent.gameName
+            );
         },
     },
 };

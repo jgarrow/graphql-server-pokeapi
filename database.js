@@ -575,6 +575,225 @@ class Database extends SQLDataSource {
 
         return pokemonIds;
     }
+
+    // Move methods
+    async getSinglePokemonMoveIds(pokemonId, gameName) {
+        // pokemon_v2_pokemonmove as pm
+        // pm.pokemon_id, pm.move_id, pm.version_group_id
+        // pokemon_v2_version as v
+        // v.version_group_id, v.id
+        const queryRes = await this.knex
+            .select('pm.move_id')
+            .from('pokemon_v2_pokemonmove as pm')
+            .innerJoin(
+                'pokemon_v2_version as v',
+                'v.version_group_id',
+                'pm.version_group_id'
+            )
+            .where('pm.pokemon_id', pokemonId)
+            .where('v.name', gameName);
+
+        const moveIds = queryRes.map((moveObj) => moveObj.move_id);
+
+        const moveIdsWithoutDuplicates = [...new Set(moveIds)];
+
+        return moveIdsWithoutDuplicates;
+    }
+
+    async getMoveName(moveId) {
+        const queryRes = await this.knex
+            .first()
+            .select('mn.name')
+            .from('pokemon_v2_movename as mn')
+            .where('mn.move_id', moveId)
+            .where('mn.language_id', 9);
+
+        return queryRes.name;
+    }
+
+    async getMoveTypeId(moveId) {
+        const queryRes = await this.knex
+            .first()
+            .select('m.type_id')
+            .from('pokemon_v2_move as m')
+            .where('m.id', moveId);
+
+        return queryRes.type_id;
+    }
+
+    async getMovePower(moveId) {
+        const queryRes = await this.knex
+            .first()
+            .select('m.power')
+            .from('pokemon_v2_move as m')
+            .where('m.id', moveId);
+
+        return queryRes.power;
+    }
+
+    async getMovePp(moveId) {
+        const queryRes = await this.knex
+            .first()
+            .select('m.pp')
+            .from('pokemon_v2_move as m')
+            .where('m.id', moveId);
+
+        return queryRes.pp;
+    }
+
+    async getMoveAccuracy(moveId) {
+        const queryRes = await this.knex
+            .first()
+            .select('m.accuracy')
+            .from('pokemon_v2_move as m')
+            .where('m.id', moveId);
+
+        return queryRes.accuracy;
+    }
+
+    async getMovePriority(moveId) {
+        const queryRes = await this.knex
+            .first()
+            .select('m.priority')
+            .from('pokemon_v2_move as m')
+            .where('m.id', moveId);
+
+        return queryRes.priority;
+    }
+
+    async getMoveEffectChance(moveId) {
+        const queryRes = await this.knex
+            .first()
+            .select('m.move_effect_chance')
+            .from('pokemon_v2_move as m')
+            .where('m.id', moveId);
+
+        return queryRes.move_effect_chance;
+    }
+
+    async getMoveDamageClass(moveId) {
+        const queryRes = await this.knex
+            .first()
+            .select('mdc.name')
+            .from('pokemon_v2_movedamageclass as mdc')
+            .innerJoin(
+                'pokemon_v2_move as m',
+                'm.move_damage_class_id',
+                'mdc.id'
+            )
+            .where('m.id', moveId);
+
+        return queryRes.name;
+    }
+
+    async getMoveEffect(moveId) {
+        const queryRes = await this.knex
+            .first()
+            .select('e.short_effect', 'm.move_effect_chance')
+            .from('pokemon_v2_moveeffecteffecttext as e')
+            .innerJoin(
+                'pokemon_v2_move as m',
+                'm.move_effect_id',
+                'e.move_effect_id'
+            )
+            .where('m.id', moveId)
+            .where('e.language_id', 9);
+
+        // replace the string "$effect_chance" with the actual percentage
+        return queryRes.short_effect.replace(
+            '$effect_chance',
+            queryRes.move_effect_chance
+        );
+    }
+
+    async getMoveDescription(moveId, gameName) {
+        // pokemon_v2_moveflavortext as mft
+        // mft.move_id, mft.flavor_text, mft.version_group_id
+        // pokemon_v2_version as v
+        // console.log('moveId: ', moveId);
+        // console.log('gameName: ', gameName);
+        const queryRes = await this.knex
+            .select('mft.flavor_text')
+            .from('pokemon_v2_moveflavortext as mft')
+            .innerJoin(
+                'pokemon_v2_version as v',
+                'v.version_group_id',
+                'mft.version_group_id'
+            )
+            .where('mft.move_id', moveId)
+            .where('mft.language_id', 9)
+            .modify(function (hasGame) {
+                if (gameName) {
+                    hasGame.where('v.name', gameName);
+                }
+            });
+
+        // if no game parameter is provided, the query returns all of the descriptions
+        // return the description from the most recent game, with the white space all normalized with spaces
+        const normalizedWhiteSpace = queryRes.length
+            ? queryRes[queryRes.length - 1].flavor_text.replace(/\s/gm, ' ')
+            : null;
+
+        return normalizedWhiteSpace;
+    }
+
+    async getMoveAilment(moveId) {
+        const queryRes = await this.knex
+            .first()
+            .select('ma.name')
+            .from('pokemon_v2_movemetaailment as ma')
+            .innerJoin(
+                'pokemon_v2_movemeta as m',
+                'm.move_meta_ailment_id',
+                'ma.id'
+            )
+            .where('m.move_id', moveId);
+
+        return queryRes.name;
+    }
+
+    async getSinglePokemonMoveLearnMethod(pokemonId, moveId, gameName) {
+        // pokemon_v2_pokemonmove as pm
+        // pm.move_learn_method_id, pm.pokemon_id, pm.move_id, pm.version_group_id
+        //
+
+        const queryRes = await this.knex
+            .first()
+            .select('mlm.name')
+            .from('pokemon_v2_movelearnmethod as mlm')
+            .innerJoin(
+                'pokemon_v2_pokemonmove as pm',
+                'pm.move_learn_method_id',
+                'mlm.id'
+            )
+            .innerJoin(
+                'pokemon_v2_version as v',
+                'v.version_group_id',
+                'pm.version_group_id'
+            )
+            .where('pm.pokemon_id', pokemonId)
+            .where('pm.move_id', moveId)
+            .where('v.name', gameName);
+
+        return queryRes.name;
+    }
+
+    async getSinglePokemonMoveLevelLearnedAt(pokemonId, moveId, gameName) {
+        const queryRes = await this.knex
+            .first()
+            .select('pm.level')
+            .from('pokemon_v2_pokemonmove as pm')
+            .innerJoin(
+                'pokemon_v2_version as v',
+                'v.version_group_id',
+                'pm.version_group_id'
+            )
+            .where('pm.pokemon_id', pokemonId)
+            .where('pm.move_id', moveId)
+            .where('v.name', gameName);
+
+        return queryRes.level;
+    }
 }
 
 module.exports = Database;

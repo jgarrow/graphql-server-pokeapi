@@ -89,16 +89,20 @@ const typeDefs = gql`
         id: Int
         name: String
         type: Type
-        learn_methods: [MoveLearnMethod] # level, egg, move tutor, tm/hm
-        # level_learned_at: Int
+        #learn_methods: [MoveLearnMethod] # level, egg, move tutor, tm/hm
+        learn_method: String
+        level_learned_at: Int
         power: Int
         accuracy: Int
         pp: Int
-        effects: [String] # possible status condition effect
+        priority: Int
+        ailment: String
+        effect_chance: Int
+        effect: String # possible status condition effect
         damage_class: String # physical or special
-        # description: String
-        description: MoveDescription
-        games: [Game]
+        description: String
+        # description: MoveDescription
+        # games: [Game]
     }
 
     type MoveLearnMethod {
