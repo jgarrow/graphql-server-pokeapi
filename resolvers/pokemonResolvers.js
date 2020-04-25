@@ -41,6 +41,20 @@ const resolvers = {
         egg_groups: (parent, args, { dataSources }) => {
             return dataSources.db.getSinglePokemonEggGroupIds(parent);
         },
+        abilities: async (parent, args, { dataSources }) => {
+            const abilityIds = await dataSources.db.getSinglePokemonAbilityIds(
+                parent
+            );
+            const idsArray = abilityIds.map((abilityId) => {
+                return {
+                    pokemonId: parent,
+                    abilityId: abilityId,
+                    gameName: args.game,
+                };
+            });
+
+            return idsArray;
+        },
     },
     Stats: {
         hp: (parent, args, { dataSources }) => {
@@ -102,6 +116,30 @@ const resolvers = {
         },
         pokemon: (parent, args, { dataSources }) => {
             return dataSources.db.getEggGroupPokemonIds(parent);
+        },
+    },
+    Ability: {
+        id: (parent, args, { dataSources }) => parent.abilityId,
+        name: (parent, args, { dataSources }) => {
+            return dataSources.db.getAbilityName(parent.abilityId);
+        },
+        is_hidden: (parent, args, { dataSources }) => {
+            return dataSources.db.getSinglePokemonAbilitiesIsHidden(
+                parent.pokemonId,
+                parent.abilityId
+            );
+        },
+        effect: (parent, args, { dataSources }) => {
+            return dataSources.db.getAbilityEffect(parent.abilityId);
+        },
+        description: (parent, args, { dataSources }) => {
+            return dataSources.db.getAbilityDescription(
+                parent.abilityId,
+                parent.gameName
+            );
+        },
+        pokemon: (parent, args, { dataSources }) => {
+            return dataSources.db.getAbilityPokemonIds(parent.abilityId);
         },
     },
 };
