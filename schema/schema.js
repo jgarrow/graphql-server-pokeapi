@@ -2,17 +2,17 @@ const { gql } = require('apollo-server');
 
 const typeDefs = gql`
     type Pokemon { # query with info wanted for my pokedex for individual Pokemon info
-        abilities(game: String): [Ability] # array of Ability objects
         sprites: Sprites # array of Sprite objects
         pokedex_entries: [DexEntry] # array of DexEntry objects
         moves(game: String!): [Move] # array of Move objects
-        locations: [Location] # array of Location objects
         evolves_from: Pokemon
         evolution_criteria: [EvolutionCriteria]
         evolution_trigger: String
         evolves_to: [Pokemon]
-        games: [Game]
 
+        games: [Game]
+        locations: [Location] # array of Location objects
+        abilities(game: String): [Ability] # array of Ability objects
         egg_groups: [EggGroup]
         types: [Type] # array of Type objects
         gender_rate: Float # percent chance of this Pokémon being female; or -1 for genderless

@@ -396,6 +396,185 @@ class Database extends SQLDataSource {
         // return the description from the most recent game
         return queryRes[queryRes.length - 1].flavor_text;
     }
+
+    // Game methods
+
+    async getSinglePokemonGameIds(pokemonId) {
+        const queryRes = await this.knex
+            .select('pgi.version_id')
+            .from('pokemon_v2_pokemongameindex as pgi')
+            .where('pgi.pokemon_id', pokemonId);
+
+        const gameIds = queryRes.map((gameObj) => gameObj.version_id);
+
+        return gameIds;
+    }
+
+    async getGameName(gameId) {
+        const queryRes = await this.knex
+            .first()
+            .select('vn.name')
+            .from('pokemon_v2_versionname as vn')
+            .where('vn.version_id', gameId)
+            .where('vn.language_id', 9);
+
+        return queryRes.name;
+    }
+
+    async getGameGeneration(gameId) {
+        const queryRes = await this.knex
+            .first()
+            .select('gn.name')
+            .from('pokemon_v2_generationname as gn')
+            .innerJoin(
+                'pokemon_v2_versiongroup as vg',
+                'vg.generation_id',
+                'gn.generation_id'
+            )
+            .innerJoin('pokemon_v2_version as v', 'v.version_group_id', 'vg.id')
+            .where('v.id', gameId)
+            .where('gn.language_id', 9);
+
+        return queryRes.name;
+    }
+
+    async getGameRegionIds(gameId) {
+        const queryRes = await this.knex
+            .select('vgr.region_id')
+            .from('pokemon_v2_versiongroupregion as vgr')
+            .innerJoin(
+                'pokemon_v2_version as v',
+                'v.version_group_id',
+                'vgr.version_group_id'
+            )
+            .where('v.id', gameId);
+
+        const regionIds = queryRes.map((region) => region.region_id);
+
+        return regionIds;
+    }
+
+    // Region methods
+
+    async getRegionName(regionId) {
+        const queryRes = await this.knex
+            .first()
+            .select('rn.name')
+            .from('pokemon_v2_regionname as rn')
+            .where('rn.region_id', regionId)
+            .where('rn.language_id', 9);
+
+        return queryRes.name;
+    }
+
+    async getRegionGameIds(regionId) {
+        const queryRes = await this.knex
+            .select('v.id')
+            .from('pokemon_v2_version as v')
+            .innerJoin(
+                'pokemon_v2_versiongroupregion as vgr',
+                'vgr.version_group_id',
+                'v.version_group_id'
+            )
+            .where('vgr.region_id', regionId);
+
+        const gameIds = queryRes.map((gameObj) => gameObj.id);
+
+        return gameIds;
+    }
+
+    async getRegionLocationIds(regionId) {
+        const queryRes = await this.knex
+            .select('l.id')
+            .from('pokemon_v2_location as l')
+            .where('l.region_id', regionId);
+
+        const locationIds = queryRes.map((locationObj) => locationObj.id);
+
+        return locationIds;
+    }
+
+    // Location methods
+    async getSinglePokemonLocationIds(pokemonId) {
+        // pokemon_v2_encounter.location_area_id
+        const queryRes = await this.knex
+            .select('la.location_id')
+            .from('pokemon_v2_locationarea as la')
+            .innerJoin(
+                'pokemon_v2_encounter as e',
+                'e.location_area_id',
+                'la.id'
+            )
+            .where('e.pokemon_id', pokemonId);
+
+        const locationIds = queryRes.map(
+            (locationObj) => locationObj.location_id
+        );
+
+        const locationIdsWithoutDuplicates = [...new Set(locationIds)];
+
+        return locationIdsWithoutDuplicates;
+    }
+
+    async getLocationName(locationId) {
+        const queryRes = await this.knex
+            .first()
+            .select('l.name')
+            .from('pokemon_v2_location as l')
+            .where('l.id', locationId);
+
+        return queryRes.name;
+    }
+
+    async getLocationRegionId(locationId) {
+        const queryRes = await this.knex
+            .first()
+            .select('l.region_id')
+            .from('pokemon_v2_location as l')
+            .where('l.id', locationId);
+
+        return queryRes.region_id;
+    }
+
+    async getLocationGameIds(locationId) {
+        // pokemon_v2_location.region_id
+        // pokemon_v2_versiongroupregion.version_group_id, .region_id
+        // pokemon_v2_version.id, version_group_id
+        const queryRes = await this.knex
+            .select('v.id')
+            .from('pokemon_v2_version as v')
+            .innerJoin(
+                'pokemon_v2_versiongroupregion as vgr',
+                'vgr.version_group_id',
+                'v.version_group_id'
+            )
+            .innerJoin(
+                'pokemon_v2_location as l',
+                'l.region_id',
+                'vgr.region_id'
+            )
+            .where('l.id', locationId);
+
+        const gameIds = queryRes.map((gameObj) => gameObj.id);
+
+        return gameIds;
+    }
+
+    async getLocationPokemonIds(locationId) {
+        const queryRes = await this.knex
+            .select('e.pokemon_id')
+            .from('pokemon_v2_encounter as e')
+            .innerJoin(
+                'pokemon_v2_locationarea as la',
+                'la.id',
+                'e.location_area_id'
+            )
+            .where('la.location_id', locationId);
+
+        const pokemonIds = queryRes.map((pokemonObj) => pokemonObj.pokemon_id);
+
+        return pokemonIds;
+    }
 }
 
 module.exports = Database;

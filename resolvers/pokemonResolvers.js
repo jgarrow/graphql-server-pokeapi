@@ -55,6 +55,12 @@ const resolvers = {
 
             return idsArray;
         },
+        games: (parent, args, { dataSources }) => {
+            return dataSources.db.getSinglePokemonGameIds(parent);
+        },
+        locations: (parent, args, { dataSources }) => {
+            return dataSources.db.getSinglePokemonLocationIds(parent);
+        },
     },
     Stats: {
         hp: (parent, args, { dataSources }) => {
@@ -140,6 +146,42 @@ const resolvers = {
         },
         pokemon: (parent, args, { dataSources }) => {
             return dataSources.db.getAbilityPokemonIds(parent.abilityId);
+        },
+    },
+    Game: {
+        id: (parent, args, { dataSources }) => parent,
+        name: (parent, args, { dataSources }) => {
+            return dataSources.db.getGameName(parent);
+        },
+        generation: (parent, args, { dataSources }) => {
+            return dataSources.db.getGameGeneration(parent);
+        },
+        regions: (parent, args, { dataSources }) => {
+            return dataSources.db.getGameRegionIds(parent);
+        },
+    },
+    Region: {
+        id: (parent, args, { dataSources }) => parent,
+        name: (parent, args, { dataSources }) => {
+            return dataSources.db.getRegionName(parent);
+        },
+        games: (parent, args, { dataSources }) => {
+            return dataSources.db.getRegionGameIds(parent);
+        },
+        locations: (parent, args, { dataSources }) => {
+            return dataSources.db.getRegionLocationIds(parent);
+        },
+    },
+    Location: {
+        id: (parent, args, { dataSources }) => parent,
+        name: (parent, args, { dataSources }) => {
+            return dataSources.db.getLocationName(parent);
+        },
+        games: (parent, args, { dataSources }) => {
+            return dataSources.db.getLocationGameIds(parent);
+        },
+        pokemon: (parent, args, { dataSources }) => {
+            return dataSources.db.getLocationPokemonIds(parent);
         },
     },
 };
