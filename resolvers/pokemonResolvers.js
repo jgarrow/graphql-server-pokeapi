@@ -82,6 +82,12 @@ const resolvers = {
 
             return idsArray;
         },
+        evolves_from: (parent, args, { dataSources }) => {
+            return dataSources.db.getSinglePokemonEvolvesFromPokemonId(parent);
+        },
+        evolves_to: (parent, args, { dataSources }) => {
+            return dataSources.db.getSinglePokemonEvolvesToPokemonId(parent);
+        },
     },
     Stats: {
         hp: (parent, args, { dataSources }) => {

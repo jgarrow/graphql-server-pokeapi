@@ -794,6 +794,47 @@ class Database extends SQLDataSource {
 
         return queryRes.level;
     }
+
+    // Evolution methods
+
+    async getSinglePokemonEvolvesFromPokemonId(pokemonId) {
+        const evolvesFromSpeciesId = this.knex
+            .first()
+            .select('ps.evolves_from_species_id')
+            .from('pokemon_v2_pokemonspecies as ps')
+            .innerJoin(
+                'pokemon_v2_pokemon as p',
+                'p.pokemon_species_id',
+                'ps.id'
+            )
+            .where('p.id', pokemonId);
+
+        const queryRes = await this.knex
+            .first()
+            .select('p.id')
+            .from('pokemon_v2_pokemon as p')
+            .where('p.pokemon_species_id', evolvesFromSpeciesId);
+
+        // returns null if the pokemon doesn't evolve from anything
+        return queryRes ? queryRes.id : null;
+    }
+
+    async getSinglePokemonEvolvesToPokemonId(pokemonId) {
+        // get pokemon who evolves from my current pokemonId
+        const queryRes = await this.knex
+            .select('p.id')
+            .from('pokemon_v2_pokemon as p')
+            .innerJoin(
+                'pokemon_v2_pokemonspecies as ps',
+                'ps.id',
+                'p.pokemon_species_id'
+            )
+            .where('ps.evolves_from_species_id', pokemonId);
+
+        // console.log('queryRes: ', queryRes);
+        const pokemonIds = queryRes.map((pokemonObj) => pokemonObj.id);
+        return pokemonIds.length ? pokemonIds : null;
+    }
 }
 
 module.exports = Database;

@@ -4,12 +4,12 @@ const typeDefs = gql`
     type Pokemon { # query with info wanted for my pokedex for individual Pokemon info
         sprites: Sprites # array of Sprite objects
         pokedex_entries: [DexEntry] # array of DexEntry objects
-        moves(game: String!): [Move] # array of Move objects
-        evolves_from: Pokemon
         evolution_criteria: [EvolutionCriteria]
         evolution_trigger: String
-        evolves_to: [Pokemon]
 
+        evolves_to: [Pokemon]
+        evolves_from: Pokemon
+        moves(game: String!): [Move] # array of Move objects
         games: [Game]
         locations: [Location] # array of Location objects
         abilities(game: String): [Ability] # array of Ability objects
