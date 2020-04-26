@@ -375,6 +375,9 @@ const resolvers = {
                 parent.game
             );
         },
+        sprite: (parent, args, { dataSources }) => {
+            return dataSources.db.getItemSprite(parent.itemId);
+        },
     },
     Gender: {
         id: (parent, args, { dataSources }) => parent.genderId,

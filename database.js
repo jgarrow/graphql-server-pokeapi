@@ -1146,6 +1146,18 @@ class Database extends SQLDataSource {
         return normalizedWhiteSpace;
     }
 
+    async getItemSprite(itemId) {
+        const baseFilePath = `~Dev/pokedex/server/media/sprites/items`;
+
+        const queryRes = await this.knex
+            .first()
+            .select('i.name')
+            .from('pokemon_v2_item as i')
+            .where('i.id', itemId);
+
+        return `${baseFilePath}/${queryRes.name}`;
+    }
+
     // database doesn't have data for what games an item is in -- just what games an item has a game_index for -- gen 1 and gen 2 don't have those
     // async getItemGameIds(itemId) {
     //     const queryRes = await this.knex

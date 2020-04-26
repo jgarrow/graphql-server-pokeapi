@@ -166,6 +166,7 @@ const typeDefs = gql`
         description: String
         cost: Int
         bag_pocket: String
+        sprite: String
         # games: [Game] # database doesn't have data for what games an item is in -- just what games an item has a game_index for -- gen 1 and gen 2 don't have those
     }
 
