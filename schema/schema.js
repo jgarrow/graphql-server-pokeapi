@@ -1,10 +1,22 @@
 const { gql } = require('apollo-server');
 
 const typeDefs = gql`
+    union EvolutionCriteria =
+          Move
+        | Item
+        | Type
+        | Location
+        | Gender
+        | OtherEvolutionCriteria
+
+    type Criteria {
+        criteria: [EvolutionCriteria]
+    }
+
     type Pokemon { # query with info wanted for my pokedex for individual Pokemon info
         sprites: Sprites # array of Sprite objects
         pokedex_entries: [DexEntry] # array of DexEntry objects
-        evolution_criteria: [EvolutionCriteria]
+        evolution_criteria(game: String): [EvolutionCriteria]
         evolution_trigger: String
         evolves_to: [Pokemon]
         evolves_from: Pokemon
@@ -37,6 +49,7 @@ const typeDefs = gql`
         no_damage_from: [Type]
         no_damage_to: [Type]
         pokemon: [Pokemon]
+        evolution_criteria_name: String
     }
 
     type EggGroup {
@@ -65,9 +78,9 @@ const typeDefs = gql`
         front_shiny_female: String
     }
 
-    type EvolutionCriteria {
-        name: String # item
-        value: String # thunder-stone
+    type OtherEvolutionCriteria {
+        evolution_criteria_name: String # time_of_day
+        value: String # night
     }
 
     type Stats {
@@ -102,6 +115,7 @@ const typeDefs = gql`
         description: String
         # description: MoveDescription
         original_games: [Game]
+        evolution_criteria_name: String
     }
 
     type MoveLearnMethod {
@@ -120,6 +134,7 @@ const typeDefs = gql`
         # location_area_id: Int # for the /location/id endpoint
         name: String
         region: Region
+        evolution_criteria_name: String
         games: [Game] # which game/version pokemon is found at this location
         pokemon: [Pokemon] # array of pokemon that can be found at this location
     }
@@ -143,6 +158,23 @@ const typeDefs = gql`
         name: String
     }
 
+    type Item {
+        id: Int
+        name: String
+        evolution_criteria_name: String
+        effect: String
+        description: String
+        cost: Int
+        bag_pocket: String
+        # games: [Game] # database doesn't have data for what games an item is in -- just what games an item has a game_index for -- gen 1 and gen 2 don't have those
+    }
+
+    type Gender {
+        id: Int
+        name: String
+        evolution_criteria_name: String
+    }
+
     type Query {
         allPokemonNamesAndIds(start: Int, end: Int): [NameAndId]
         allPokemon: [Pokemon] # get range of pokemon starting from start variable
@@ -153,6 +185,7 @@ const typeDefs = gql`
         allMoves: [Move]
         allRegions: [Region]
         allGames: [Game]
+        allItems: [Item]
         # game(name: String!): [Pokemon] # get pokemon from a specific game
         # generation(generationNumber: Int!): [Pokemon] # get pokemon from specific generation regardless of game
         pokemon(id: Int!): Pokemon
@@ -163,6 +196,7 @@ const typeDefs = gql`
         move(id: Int!): Move
         region(id: Int!): Region
         game(id: Int): Game
+        item(id: Int): Item
     }
 `;
 

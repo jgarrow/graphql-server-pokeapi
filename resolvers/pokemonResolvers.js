@@ -6,23 +6,46 @@ const resolvers = {
         allAbilities: (parent, args, { dataSources }) => {
             return dataSources.db.getAllAbilityIds();
         },
-        allTypes: (parent, args, { dataSources }) => {
-            return dataSources.db.getAllTypeIds();
+        allTypes: async (parent, args, { dataSources }) => {
+            const typeIds = await dataSources.db.getAllTypeIds();
+            return typeIds.map((type) => {
+                return {
+                    typeId: type,
+                };
+            });
         },
         allEggGroups: (parent, args, { dataSources }) => {
             return dataSources.db.getAllEggGroupIds();
         },
-        allLocations: (parent, args, { dataSources }) => {
-            return dataSources.db.getAllLocationIds();
+        allLocations: async (parent, args, { dataSources }) => {
+            const locationIds = await dataSources.db.getAllLocationIds();
+            return locationIds.map((location) => {
+                return {
+                    locationId: location,
+                };
+            });
         },
-        allMoves: (parent, args, { dataSources }) => {
-            return dataSources.db.getAllMoveIds();
+        allMoves: async (parent, args, { dataSources }) => {
+            const moveIds = await dataSources.db.getAllMoveIds();
+            return moveIds.map((move) => {
+                return {
+                    moveId: move,
+                };
+            });
         },
         allRegions: (parent, args, { dataSources }) => {
             return dataSources.db.getAllRegionIds();
         },
         allGames: (parent, args, { dataSources }) => {
             return dataSources.db.getAllGameIds();
+        },
+        allItems: async (parent, args, { dataSources }) => {
+            const itemIds = await dataSources.db.getAllItemIds();
+            return itemIds.map((item) => {
+                return {
+                    itemId: item,
+                };
+            });
         },
         pokemon: (parent, args, { dataSources }) => args.id,
         game: (parent, args, { dataSources }) => args.id,
@@ -71,7 +94,7 @@ const resolvers = {
             return dataSources.db.getSinglePokemonGenderRate(parent);
         },
         types: (parent, args, { dataSources }) => {
-            return dataSources.db.getSinglePokemonTypeIds(parent);
+            return { typeId: dataSources.db.getSinglePokemonTypeIds(parent) };
         },
         egg_groups: (parent, args, { dataSources }) => {
             return dataSources.db.getSinglePokemonEggGroupIds(parent);
@@ -97,7 +120,9 @@ const resolvers = {
             return dataSources.db.getSinglePokemonGameIds(parent);
         },
         locations: (parent, args, { dataSources }) => {
-            return dataSources.db.getSinglePokemonLocationIds(parent);
+            return {
+                locationId: dataSources.db.getSinglePokemonLocationIds(parent),
+            };
         },
         moves: async (parent, args, { dataSources }) => {
             const moveIds = await dataSources.db.getSinglePokemonMoveIds(
@@ -124,8 +149,17 @@ const resolvers = {
         evolution_trigger: (parent, args, { dataSources }) => {
             return dataSources.db.getSinglePokemonEvolutionTrigger(parent);
         },
-        evolution_criteria: (parent, args, { dataSources }) => {
-            return dataSources.db.getSinglePokemonEvolutionCriteria(parent);
+        evolution_criteria: async (parent, args, { dataSources }) => {
+            const criteria = await dataSources.db.getSinglePokemonEvolutionCriteria(
+                parent
+            );
+
+            return criteria.map((criteria) => {
+                return {
+                    ...criteria,
+                    ...args,
+                };
+            });
         },
         pokedex_entries: (parent, args, { dataSources }) => {
             return dataSources.db.getSinglePokemonPokedexEntries(parent);
@@ -158,30 +192,30 @@ const resolvers = {
         },
     },
     Type: {
-        id: (parent, args, { dataSources }) => parent,
+        id: (parent, args, { dataSources }) => parent.typeId,
         name: (parent, args, { dataSources }) => {
-            return dataSources.db.getTypeName(parent);
+            return dataSources.db.getTypeName(parent.typeId);
         },
         double_damage_from: (parent, args, { dataSources }) => {
-            return dataSources.db.getTypeDoubleDamageFromIds(parent);
+            return dataSources.db.getTypeDoubleDamageFromIds(parent.typeId);
         },
         double_damage_to: (parent, args, { dataSources }) => {
-            return dataSources.db.getTypeDoubleDamageToIds(parent);
+            return dataSources.db.getTypeDoubleDamageToIds(parent.typeId);
         },
         half_damage_from: (parent, args, { dataSources }) => {
-            return dataSources.db.getTypeHalfDamageFromIds(parent);
+            return dataSources.db.getTypeHalfDamageFromIds(parent.typeId);
         },
         half_damage_to: (parent, args, { dataSources }) => {
-            return dataSources.db.getTypeHalfDamageToIds(parent);
+            return dataSources.db.getTypeHalfDamageToIds(parent.typeId);
         },
         no_damage_to: (parent, args, { dataSources }) => {
-            return dataSources.db.getTypeNoDamageToIds(parent);
+            return dataSources.db.getTypeNoDamageToIds(parent.typeId);
         },
         no_damage_from: (parent, args, { dataSources }) => {
-            return dataSources.db.getTypeNoDamageFromIds(parent);
+            return dataSources.db.getTypeNoDamageFromIds(parent.typeId);
         },
         pokemon: (parent, args, { dataSources }) => {
-            return dataSources.db.getPokemonIdsForType(parent);
+            return dataSources.db.getPokemonIdsForType(parent.typeId);
         },
     },
     EggGroup: {
@@ -242,18 +276,18 @@ const resolvers = {
         },
     },
     Location: {
-        id: (parent, args, { dataSources }) => parent,
+        id: (parent, args, { dataSources }) => parent.locationId,
         name: (parent, args, { dataSources }) => {
-            return dataSources.db.getLocationName(parent);
+            return dataSources.db.getLocationName(parent.locationId);
         },
         games: (parent, args, { dataSources }) => {
-            return dataSources.db.getLocationGameIds(parent);
+            return dataSources.db.getLocationGameIds(parent.locationId);
         },
         region: (parent, args, { dataSources }) => {
-            return dataSources.db.getLocationRegionId(parent);
+            return dataSources.db.getLocationRegionId(parent.locationId);
         },
         pokemon: (parent, args, { dataSources }) => {
-            return dataSources.db.getLocationPokemonIds(parent);
+            return dataSources.db.getLocationPokemonIds(parent.locationId);
         },
     },
     Move: {
@@ -315,6 +349,60 @@ const resolvers = {
     DexEntry: {
         description: (parent, args, { dataSources }) => parent.description,
         game: (parent, args, { dataSources }) => parent.gameId,
+    },
+    OtherEvolutionCriteria: {
+        evolution_criteria_name: (parent, args, { dataSources }) =>
+            parent.evolution_criteria_name,
+        value: (parent, args, { dataSources }) => parent.value,
+    },
+    Item: {
+        id: (parent, args, { dataSources }) => parent.itemId,
+        name: (parent, args, { dataSources }) => {
+            return dataSources.db.getItemName(parent.itemId);
+        },
+        cost: (parent, args, { dataSources }) => {
+            return dataSources.db.getItemCost(parent.itemId);
+        },
+        bag_pocket: (parent, args, { dataSources }) => {
+            return dataSources.db.getItemBagPocket(parent.itemId);
+        },
+        effect: (parent, args, { dataSources }) => {
+            return dataSources.db.getItemEffect(parent.itemId);
+        },
+        description: (parent, args, { dataSources }) => {
+            return dataSources.db.getItemDescription(
+                parent.itemId,
+                parent.game
+            );
+        },
+    },
+    Gender: {
+        id: (parent, args, { dataSources }) => parent.genderId,
+        name: (parent, args, { dataSources }) => {
+            return dataSources.db.getGenderName(parent.genderId);
+        },
+    },
+    EvolutionCriteria: {
+        __resolveType(obj, context, info) {
+            if (
+                obj.evolution_criteria_name === 'held_item' ||
+                obj.evolution_criteria_name === 'evolution_item'
+            ) {
+                return 'Item';
+            } else if (obj.evolution_criteria_name === 'known_move') {
+                return 'Move';
+            } else if (obj.evolution_criteria_name === 'known_move_type') {
+                return 'Type';
+            } else if (obj.evolution_criteria_name === 'location') {
+                return 'Location';
+            } else if (obj.evolution_criteria_name === 'gender') {
+                return 'Gender';
+            } else if (obj.value) {
+                return 'OtherEvolutionCriteria';
+            }
+
+            return null;
+        },
     },
 };
 

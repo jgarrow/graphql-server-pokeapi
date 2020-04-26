@@ -94,6 +94,14 @@ class Database extends SQLDataSource {
         return regionIds;
     }
 
+    async getAllItemIds() {
+        const queryRes = await this.knex.select('id').from('pokemon_v2_item');
+
+        const itemIds = queryRes.map((item) => item.id);
+
+        return itemIds;
+    }
+
     async getSinglePokemonHeight(pokemonId) {
         const queryRes = await this.knex
             .first()
@@ -526,7 +534,6 @@ class Database extends SQLDataSource {
     // Region methods
 
     async getRegionName(regionId) {
-        console.log('regionId: ', regionId);
         const queryRes = await this.knex
             .first()
             .select('rn.name')
@@ -904,72 +911,50 @@ class Database extends SQLDataSource {
                 );
 
                 return criteriaKeys
-                    .map(async (key) => {
+                    .map((key) => {
                         const returnObj = {
-                            name: key,
+                            evolution_criteria_name: key,
                             value:
                                 typeof criteriaObj[key] === 'object'
                                     ? criteriaObj[key].name
                                     : criteriaObj[key].toString(),
                         };
 
-                        // for the keys that are ids, get their names
                         if (
-                            key === 'held_item_id' ||
-                            key === 'evolution_item_id'
+                            returnObj.evolution_criteria_name ===
+                                'held_item_id' ||
+                            returnObj.evolution_criteria_name ===
+                                'evolution_item_id'
                         ) {
-                            const itemQueryRes = await this.knex
-                                .first()
-                                .select('i.name')
-                                .from('pokemon_v2_item as i')
-                                .where('i.id', criteriaObj[key]);
-
-                            returnObj.value = itemQueryRes.name;
-                        } else if (key === 'known_move_id') {
-                            const moveQueryRes = await this.knex
-                                .first()
-                                .select('mn.name')
-                                .from('pokemon_v2_movename as mn')
-                                .where('mn.move_id', criteriaObj[key])
-                                .where('mn.language_id', 9);
-
-                            returnObj.value = moveQueryRes.name;
-                        } else if (key === 'known_move_type_id') {
-                            const moveTypeQueryRes = await this.knex
-                                .first()
-                                .select('t.name')
-                                .from('pokemon_v2_typename as t')
-                                .innerJoin(
-                                    'pokemon_v2_move as m',
-                                    'm.type_id',
-                                    't.type_id'
-                                )
-                                .where('m.type_id', criteriaObj[key])
-                                .where('t.language_id', 9);
-
-                            returnObj.value = moveTypeQueryRes.name;
-                        } else if (key === 'location_id') {
-                            const locationNameQueryRes = await this.knex
-                                .first()
-                                .select('l.name')
-                                .from('pokemon_v2_location as l')
-                                .where('l.id', criteriaObj[key]);
-
-                            returnObj.value = locationNameQueryRes.name;
-                        } else if (key === 'gender_id') {
-                            const genderQueryRes = await this.knex
-                                .first()
-                                .select('g.name')
-                                .from('pokemon_v2_gender as g')
-                                .where('g.id', criteriaObj[key]);
-
-                            returnObj.value = genderQueryRes.name;
+                            returnObj.itemId = returnObj.value;
+                        } else if (
+                            returnObj.evolution_criteria_name ===
+                            'known_move_id'
+                        ) {
+                            returnObj.moveId = returnObj.value;
+                        } else if (
+                            returnObj.evolution_criteria_name ===
+                            'known_move_type_id'
+                        ) {
+                            returnObj.typeId = returnObj.value;
+                        } else if (
+                            returnObj.evolution_criteria_name === 'location_id'
+                        ) {
+                            returnObj.locationId = returnObj.value;
+                        } else if (
+                            returnObj.evolution_criteria_name === 'gender_id'
+                        ) {
+                            returnObj.genderId = returnObj.value;
                         }
 
+                        // get rid of id at the end of evolution_criteria_name
                         const parsedKey = key.split('_');
 
                         if (parsedKey[parsedKey.length - 1] === 'id') {
-                            returnObj.name = key.slice(0, -3);
+                            returnObj.evolution_criteria_name = key.slice(
+                                0,
+                                -3
+                            );
                         }
 
                         return returnObj;
@@ -1082,6 +1067,117 @@ class Database extends SQLDataSource {
             back_shiny: `${baseFilePath}/back/shiny/${pokemonId}.png`,
             back_shiny_female: `${baseFilePath}/back/shiny/female/${pokemonId}.png`,
         };
+    }
+
+    // Item methods
+
+    async getItemName(itemId) {
+        const queryRes = await this.knex
+            .first()
+            .select('in.name')
+            .from('pokemon_v2_itemname as in')
+            .where({ item_id: itemId })
+            .where({ language_id: 9 });
+
+        return queryRes.name;
+    }
+
+    async getItemCost(itemId) {
+        const queryRes = await this.knex
+            .first()
+            .select('cost')
+            .from('pokemon_v2_item')
+            .where({ id: itemId });
+
+        return queryRes.cost;
+    }
+
+    async getItemBagPocket(itemId) {
+        const queryRes = await this.knex
+            .first()
+            .select('ipn.name')
+            .from('pokemon_v2_itempocketname as ipn')
+            .innerJoin(
+                'pokemon_v2_itemcategory as ic',
+                'ic.item_pocket_id',
+                'ipn.item_pocket_id'
+            )
+            .innerJoin('pokemon_v2_item as i', 'i.item_category_id', 'ic.id')
+            .where('i.id', itemId)
+            .where('ipn.language_id', 9);
+
+        return queryRes.name;
+    }
+
+    async getItemEffect(itemId) {
+        const queryRes = await this.knex
+            .first()
+            .select('short_effect')
+            .from('pokemon_v2_itemeffecttext')
+            .where({ item_id: itemId })
+            .where({ language_id: 9 });
+
+        return queryRes.short_effect;
+    }
+
+    async getItemDescription(itemId, gameName) {
+        const queryRes = await this.knex
+            .select('ift.flavor_text')
+            .from('pokemon_v2_itemflavortext as ift')
+            .innerJoin(
+                'pokemon_v2_version as v',
+                'v.version_group_id',
+                'ift.version_group_id'
+            )
+            .where('ift.item_id', itemId)
+            .where('ift.language_id', 9)
+            .modify(function (hasGame) {
+                if (gameName) {
+                    hasGame.where('v.name', gameName);
+                }
+            });
+
+        // if no game parameter is provided, the query returns all of the descriptions
+        // return the description from the most recent game, with the white space all normalized with spaces
+        const normalizedWhiteSpace = queryRes.length
+            ? queryRes[queryRes.length - 1].flavor_text.replace(/\s/gm, ' ')
+            : null;
+
+        return normalizedWhiteSpace;
+    }
+
+    // database doesn't have data for what games an item is in -- just what games an item has a game_index for -- gen 1 and gen 2 don't have those
+    // async getItemGameIds(itemId) {
+    //     const queryRes = await this.knex
+    //         .select('v.id')
+    //         .from('pokemon_v2_version as v')
+    //         .innerJoin(
+    //             'pokemon_v2_versiongroup as vg',
+    //             'v.version_group_id',
+    //             'vg.id'
+    //         )
+    //         .innerJoin(
+    //             'pokemon_v2_itemgameindex as igi',
+    //             'vg.generation_id',
+    //             'igi.generation_id'
+    //         )
+    //         .where('igi.item_id', itemId);
+
+    //     const gameIds = queryRes.map((game) => game.id);
+
+    //     return gameIds;
+    // }
+
+    // Gender methods
+
+    async getGenderName(genderId) {
+        const queryRes = await this.knex
+            .first()
+            .select('name')
+            .from('pokemon_v2_gender')
+            .where({ id: genderId });
+
+        return queryRes.name;
     }
 }
 
