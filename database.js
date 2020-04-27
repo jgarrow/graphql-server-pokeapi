@@ -1117,7 +1117,8 @@ class Database extends SQLDataSource {
             .where({ item_id: itemId })
             .where({ language_id: 9 });
 
-        return queryRes.short_effect;
+        // normalize the white space
+        return queryRes.short_effect.replace(/\s/gm, ' ');
     }
 
     async getItemDescription(itemId, gameName) {
