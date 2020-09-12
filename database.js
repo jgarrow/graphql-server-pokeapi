@@ -4,14 +4,22 @@ const { SQLDataSource } = require('datasource-sql');
 
 const MINUTE = 60 * 1000;
 
+// TODO:
+// separate ID's for alternate forms
+// original PokeAPI has form urls under `/pokemon-species/#`, under `varieties`
+// can parse out those ID's to separate them out from the rest
+// pokemon_v2_pokemonform table -- those with a form_name != ""
+
 class Database extends SQLDataSource {
     async getAllPokemonIds() {
         const queryRes = await this.knex
             .select('id')
             .from('pokemon_v2_pokemon')
             .cache(MINUTE);
+        console.log('queryRes: ', queryRes)
 
         const pokemonIds = queryRes.map((pokemon) => pokemon.id);
+        console.log('pokemonIds: ', pokemonIds)
 
         return pokemonIds;
     }
@@ -43,6 +51,7 @@ class Database extends SQLDataSource {
             .from('pokemon_v2_pokemon as p')
             .where({ id: pokemonId });
 
+        console.log('queryRes: ', queryRes)
         return queryRes.name;
     }
 
@@ -135,6 +144,121 @@ class Database extends SQLDataSource {
             .where('p.id', pokemonId);
 
         return queryRes.is_baby;
+    }
+
+    async getSinglePokemonColor(pokemonId) {
+        const queryRes = await this.knex
+            .first()
+            .select('pc.name')
+            .from('pokemon_v2_pokemoncolor as pc')
+            .innerJoin(
+                'pokemon_v2_pokemonspecies as ps',
+                'ps.pokemon_color_id',
+                'pc.id'
+            )
+            .innerJoin(
+                'pokemon_v2_pokemon as p',
+                'p.pokemon_species_id',
+                'ps.id'
+            )
+            .where('p.id', pokemonId);
+
+        return queryRes.name;
+    }
+
+    async getSinglePokemonCaptureRate(pokemonId) {
+        const queryRes = await this.knex
+            .first()
+            .select('ps.capture_rate')
+            .from('pokemon_v2_pokemonspecies as ps')
+            .innerJoin(
+                'pokemon_v2_pokemon as p',
+                'p.pokemon_species_id',
+                'ps.id'
+            )
+            .where('p.id', pokemonId);
+
+        return queryRes.capture_rate;
+    }
+
+    async getSinglePokemonGrowthRate(pokemonId) {
+        const queryRes = await this.knex
+            .first()
+            .select('gr.name')
+            .from('pokemon_v2_growthrate as gr')
+            .innerJoin(
+                'pokemon_v2_pokemonspecies as ps',
+                'ps.growth_rate_id',
+                'gr.id'
+            )
+            .innerJoin(
+                'pokemon_v2_pokemon as p',
+                'p.pokemon_species_id',
+                'ps.id'
+            )
+            .where('p.id', pokemonId);
+
+        return queryRes.name;
+    }
+
+    async getSinglePokemonShape(pokemonId) {
+        const queryRes = await this.knex
+            .first()
+            .select('sh.name')
+            .from('pokemon_v2_pokemonshape as sh')
+            .innerJoin(
+                'pokemon_v2_pokemonspecies as ps',
+                'ps.pokemon_shape_id',
+                'sh.id'
+            )
+            .innerJoin(
+                'pokemon_v2_pokemon as p',
+                'p.pokemon_species_id',
+                'ps.id'
+            )
+            .where('p.id', pokemonId);
+
+        return queryRes.name;
+    }
+
+    async getSinglePokemonBaseHappiness(pokemonId) {
+        const queryRes = await this.knex
+            .first()
+            .select('ps.base_happiness')
+            .from('pokemon_v2_pokemonspecies as ps')
+            .innerJoin(
+                'pokemon_v2_pokemon as p',
+                'p.pokemon_species_id',
+                'ps.id'
+            )
+            .where('p.id', pokemonId);
+
+        return queryRes.base_happiness;
+    }
+
+    async getSinglePokemonBaseExperience(pokemonId) {
+        const queryRes = await this.knex
+            .first()
+            .select('base_experience')
+            .from('pokemon_v2_pokemon')
+            .where({ id: pokemonId });
+
+        return queryRes.base_experience;
+    }
+
+    async getSinglePokemonHatchCounter(pokemonId) {
+        const queryRes = await this.knex
+            .first()
+            .select('ps.hatch_counter')
+            .from('pokemon_v2_pokemonspecies as ps')
+            .innerJoin(
+                'pokemon_v2_pokemon as p',
+                'p.pokemon_species_id',
+                'ps.id'
+            )
+            .where('p.id', pokemonId);
+
+        return queryRes.hatch_counter;
     }
 
     async getSinglePokemonGenderRate(pokemonId) {
@@ -256,7 +380,7 @@ class Database extends SQLDataSource {
     async getTypeName(typeId) {
         const queryRes = await this.knex
             .first()
-            .select('t.name', 't.type_id')
+            .select('t.name')
             .from('pokemon_v2_typename as t')
             .where('t.type_id', typeId)
             .where('t.language_id', 9);
@@ -593,12 +717,14 @@ class Database extends SQLDataSource {
     }
 
     async getLocationName(locationId) {
+        console.log('locationId: ', locationId);
         const queryRes = await this.knex
             .first()
             .select('l.name')
             .from('pokemon_v2_location as l')
             .where('l.id', locationId);
 
+        console.log('queryRes: ', queryRes);
         return queryRes.name;
     }
 
@@ -816,16 +942,10 @@ class Database extends SQLDataSource {
         return queryRes.name;
     }
 
-    async getSinglePokemonMoveLearnMethod(pokemonId, moveId, gameName) {
+    async getSinglePokemonLearnMethodIds(pokemonId, moveId, gameName) {
         const queryRes = await this.knex
-            .first()
-            .select('mlm.name')
-            .from('pokemon_v2_movelearnmethod as mlm')
-            .innerJoin(
-                'pokemon_v2_pokemonmove as pm',
-                'pm.move_learn_method_id',
-                'mlm.id'
-            )
+            .select('pm.move_learn_method_id', 'pm.level', 'v.id')
+            .from('pokemon_v2_pokemonmove as pm')
             .innerJoin(
                 'pokemon_v2_version as v',
                 'v.version_group_id',
@@ -835,12 +955,45 @@ class Database extends SQLDataSource {
             .where('pm.move_id', moveId)
             .where('v.name', gameName);
 
+        // const methodIds = queryRes.map((method) => method.move_learn_method_id);
+
+        return queryRes;
+    }
+
+    async getSinglePokemonMoveLearnMethodName(learnMethodId) {
+        const queryRes = await this.knex
+            .first()
+            .select('name')
+            .from('pokemon_v2_movelearnmethod')
+            .where({ id: learnMethodId });
+
         return queryRes.name;
     }
 
+    // async getSinglePokemonMoveLearnMethod(pokemonId, moveId, gameName) {
+    //     const queryRes = await this.knex
+    //         .first()
+    //         .select('mlm.name')
+    //         .from('pokemon_v2_movelearnmethod as mlm')
+    //         .innerJoin(
+    //             'pokemon_v2_pokemonmove as pm',
+    //             'pm.move_learn_method_id',
+    //             'mlm.id'
+    //         )
+    //         .innerJoin(
+    //             'pokemon_v2_version as v',
+    //             'v.version_group_id',
+    //             'pm.version_group_id'
+    //         )
+    //         .where('pm.pokemon_id', pokemonId)
+    //         .where('pm.move_id', moveId)
+    //         .where('v.name', gameName);
+
+    //     return queryRes.name;
+    // }
+
     async getSinglePokemonMoveLevelLearnedAt(pokemonId, moveId, gameName) {
         const queryRes = await this.knex
-            .first()
             .select('pm.level')
             .from('pokemon_v2_pokemonmove as pm')
             .innerJoin(
@@ -1055,10 +1208,36 @@ class Database extends SQLDataSource {
     // this will return a file path regardless of whether or not there is an image at that path
     // will have to check on client side if exists
     async getSinglePokemonSprites(pokemonId) {
-        const baseFilePath = '~/Dev/pokedex/server/media/sprites/pokemon';
+        // const baseFilePath = 'src/images/sprites/pokemon';
+        const baseFilePath = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon`;
+        let front_default_img = `${baseFilePath}/${pokemonId}.png`;
+        
+        // try if pokemon/pokemonId.sprites === null, check sprites in .form, parse the image url and create it dynamically
+
+        const nameQuery = await this.knex
+            .first()
+            .select('p.name')
+            .from('pokemon_v2_pokemon as p')
+            .where({ id: pokemonId });
+
+        const name = nameQuery.name;
+
+        if (name.includes('alola')) {
+            // console.log('name: ', name);
+            const alolanQuery = await this.knex
+                .first()
+                .select('pfs.sprites')
+                .from('pokemon_v2_pokemonformsprites as pfs')
+                .innerJoin('pokemon_v2_pokemonform as pf', 'pf.id', 'pfs.id')
+                .where('pf.pokemon_id', pokemonId);
+
+            front_default_img = alolanQuery.sprites;
+            front_default_img = `${baseFilePath}/${pokemonId}-alola.png`;
+            // }
+        }
 
         return {
-            front_default: `${baseFilePath}/${pokemonId}.png`,
+            front_default: front_default_img,
             front_female: `${baseFilePath}/female/${pokemonId}.png`,
             front_shiny: `${baseFilePath}/shiny/${pokemonId}.png`,
             front_shiny_female: `${baseFilePath}/shiny/female/${pokemonId}.png`,
@@ -1148,7 +1327,8 @@ class Database extends SQLDataSource {
     }
 
     async getItemSprite(itemId) {
-        const baseFilePath = `~Dev/pokedex/server/media/sprites/items`;
+        // const baseFilePath = `src/images/sprites/items`;
+        const baseFilePath = `https://raw.githubusercontent.com/PokeAPI/sprites/master`;
 
         const queryRes = await this.knex
             .first()
