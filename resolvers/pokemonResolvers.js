@@ -84,6 +84,9 @@ const resolvers = {
         generation: (parent, args, { dataSources }) => {
             return dataSources.db.getSinglePokemonGeneration(parent);
         },
+        base_experience: (parent, args, { dataSources }) => {
+            return dataSources.db.getSinglePokemonBaseExperience(parent);
+        },
         base_stats: (parent, args, { dataSources }) => {
             return dataSources.db.getSinglePokemonStats(parent);
         },
@@ -93,8 +96,33 @@ const resolvers = {
         gender_rate: (parent, args, { dataSources }) => {
             return dataSources.db.getSinglePokemonGenderRate(parent);
         },
-        types: (parent, args, { dataSources }) => {
-            return { typeId: dataSources.db.getSinglePokemonTypeIds(parent) };
+        color: (parent, args, { dataSources }) => {
+            return dataSources.db.getSinglePokemonColor(parent);
+        },
+        capture_rate: (parent, args, { dataSources }) => {
+            return dataSources.db.getSinglePokemonCaptureRate(parent);
+        },
+        growth_rate: (parent, args, { dataSources }) => {
+            return dataSources.db.getSinglePokemonGrowthRate(parent);
+        },
+        shape: (parent, args, { dataSources }) => {
+            return dataSources.db.getSinglePokemonShape(parent);
+        },
+        base_happiness: (parent, args, { dataSources }) => {
+            return dataSources.db.getSinglePokemonBaseHappiness(parent);
+        },
+        hatch_counter: (parent, args, { dataSources }) => {
+            return dataSources.db.getSinglePokemonHatchCounter(parent);
+        },
+        types: async (parent, args, { dataSources }) => {
+            const typeIds = await dataSources.db.getSinglePokemonTypeIds(
+                parent
+            );
+            return typeIds.map((type) => {
+                return {
+                    typeId: type,
+                };
+            });
         },
         egg_groups: (parent, args, { dataSources }) => {
             return dataSources.db.getSinglePokemonEggGroupIds(parent);
@@ -119,10 +147,17 @@ const resolvers = {
         games: (parent, args, { dataSources }) => {
             return dataSources.db.getSinglePokemonGameIds(parent);
         },
-        locations: (parent, args, { dataSources }) => {
-            return {
-                locationId: dataSources.db.getSinglePokemonLocationIds(parent),
-            };
+        locations: async (parent, args, { dataSources }) => {
+            const locationIds = await dataSources.db.getSinglePokemonLocationIds(
+                parent
+            );
+            return locationIds.length
+                ? locationIds.map((location) => {
+                      return {
+                          locationId: location,
+                      };
+                  })
+                : null;
         },
         moves: async (parent, args, { dataSources }) => {
             const moveIds = await dataSources.db.getSinglePokemonMoveIds(
@@ -154,12 +189,14 @@ const resolvers = {
                 parent
             );
 
-            return criteria.map((criteria) => {
-                return {
-                    ...criteria,
-                    ...args,
-                };
-            });
+            return criteria
+                ? criteria.map((criteria) => {
+                      return {
+                          ...criteria,
+                          ...args,
+                      };
+                  })
+                : null;
         },
         pokedex_entries: (parent, args, { dataSources }) => {
             return dataSources.db.getSinglePokemonPokedexEntries(parent);
@@ -271,8 +308,15 @@ const resolvers = {
         games: (parent, args, { dataSources }) => {
             return dataSources.db.getRegionGameIds(parent);
         },
-        locations: (parent, args, { dataSources }) => {
-            return dataSources.db.getRegionLocationIds(parent);
+        locations: async (parent, args, { dataSources }) => {
+            const locationIds = await dataSources.db.getRegionLocationIds(
+                parent
+            );
+            return locationIds.map((location) => {
+                return {
+                    locationId: location,
+                };
+            });
         },
     },
     Location: {
@@ -295,8 +339,11 @@ const resolvers = {
         name: (parent, args, { dataSources }) => {
             return dataSources.db.getMoveName(parent.moveId);
         },
-        type: (parent, args, { dataSources }) => {
-            return dataSources.db.getMoveTypeId(parent.moveId);
+        type: async (parent, args, { dataSources }) => {
+            const typeId = await dataSources.db.getMoveTypeId(parent.moveId);
+            return {
+                typeId,
+            };
         },
         power: (parent, args, { dataSources }) => {
             return dataSources.db.getMovePower(parent.moveId);
@@ -328,15 +375,8 @@ const resolvers = {
                 parent.gameName
             );
         },
-        learn_method: (parent, args, { dataSources }) => {
-            return dataSources.db.getSinglePokemonMoveLearnMethod(
-                parent.pokemonId,
-                parent.moveId,
-                parent.gameName
-            );
-        },
-        level_learned_at: (parent, args, { dataSources }) => {
-            return dataSources.db.getSinglePokemonMoveLevelLearnedAt(
+        learn_methods: (parent, args, { dataSources }) => {
+            return dataSources.db.getSinglePokemonLearnMethodIds(
                 parent.pokemonId,
                 parent.moveId,
                 parent.gameName
@@ -344,6 +384,19 @@ const resolvers = {
         },
         original_games: (parent, args, { dataSources }) => {
             return dataSources.db.getMoveGameIds(parent.moveId);
+        },
+    },
+    MoveLearnMethod: {
+        method: (parent, args, { dataSources }) => {
+            return dataSources.db.getSinglePokemonMoveLearnMethodName(
+                parent.move_learn_method_id
+            );
+        },
+        level_learned_at: (parent, args, { dataSources }) => {
+            return parent.level;
+        },
+        games: (parent, args, { dataSources }) => {
+            return parent.id;
         },
     },
     DexEntry: {

@@ -2,7 +2,7 @@
 
 const { SQLDataSource } = require('datasource-sql');
 
-const MINUTE = 60 * 1000;
+const MINUTE = 60 * 10000;
 
 // TODO:
 // separate ID's for alternate forms
@@ -16,10 +16,10 @@ class Database extends SQLDataSource {
             .select('id')
             .from('pokemon_v2_pokemon')
             .cache(MINUTE);
-        console.log('queryRes: ', queryRes)
+        // console.log('queryRes: ', queryRes)
 
         const pokemonIds = queryRes.map((pokemon) => pokemon.id);
-        console.log('pokemonIds: ', pokemonIds)
+        // console.log('pokemonIds: ', pokemonIds)
 
         return pokemonIds;
     }
@@ -27,7 +27,8 @@ class Database extends SQLDataSource {
     async getAllAbilityIds() {
         const queryRes = await this.knex
             .select('id')
-            .from('pokemon_v2_ability');
+            .from('pokemon_v2_ability')
+            .cache(MINUTE);
 
         const abilityIds = queryRes.map((ability) => {
             return { abilityId: ability.id };
@@ -45,13 +46,15 @@ class Database extends SQLDataSource {
     }
 
     async getSinglePokemonName(pokemonId) {
+        // console.log('pokemonId: ', pokemonId)
         const queryRes = await this.knex
             .first()
             .select('p.name')
             .from('pokemon_v2_pokemon as p')
-            .where({ id: pokemonId });
+            .where({ id: pokemonId })
+            .cache(MINUTE);
 
-        console.log('queryRes: ', queryRes)
+        // console.log('queryRes: ', queryRes)
         return queryRes.name;
     }
 
@@ -68,7 +71,8 @@ class Database extends SQLDataSource {
     async getAllLocationIds() {
         const queryRes = await this.knex
             .select('id')
-            .from('pokemon_v2_location');
+            .from('pokemon_v2_location')
+            .cache(MINUTE);
 
         const locationIds = queryRes.map((location) => location.id);
 
@@ -76,7 +80,7 @@ class Database extends SQLDataSource {
     }
 
     async getAllMoveIds() {
-        const queryRes = await this.knex.select('id').from('pokemon_v2_move');
+        const queryRes = await this.knex.select('id').from('pokemon_v2_move').cache(MINUTE);
 
         const moveIds = queryRes.map((move) => {
             return { moveId: move.id };
@@ -88,7 +92,8 @@ class Database extends SQLDataSource {
     async getAllGameIds() {
         const queryRes = await this.knex
             .select('id')
-            .from('pokemon_v2_version');
+            .from('pokemon_v2_version')
+            .cache(MINUTE);
 
         const gameIds = queryRes.map((game) => game.id);
 
@@ -96,7 +101,7 @@ class Database extends SQLDataSource {
     }
 
     async getAllRegionIds() {
-        const queryRes = await this.knex.select('id').from('pokemon_v2_region');
+        const queryRes = await this.knex.select('id').from('pokemon_v2_region').cache(MINUTE);
 
         const regionIds = queryRes.map((region) => region.id);
 
@@ -104,7 +109,7 @@ class Database extends SQLDataSource {
     }
 
     async getAllItemIds() {
-        const queryRes = await this.knex.select('id').from('pokemon_v2_item');
+        const queryRes = await this.knex.select('id').from('pokemon_v2_item').cache(MINUTE);
 
         const itemIds = queryRes.map((item) => item.id);
 
@@ -116,7 +121,8 @@ class Database extends SQLDataSource {
             .first()
             .select('p.height')
             .from('pokemon_v2_pokemon as p')
-            .where({ id: pokemonId });
+            .where({ id: pokemonId })
+            .cache(MINUTE);
 
         return queryRes.height;
     }
@@ -126,7 +132,8 @@ class Database extends SQLDataSource {
             .first()
             .select('p.weight')
             .from('pokemon_v2_pokemon as p')
-            .where({ id: pokemonId });
+            .where({ id: pokemonId })
+            .cache(MINUTE);
 
         return queryRes.weight;
     }
@@ -141,7 +148,8 @@ class Database extends SQLDataSource {
                 'p.pokemon_species_id',
                 'ps.id'
             )
-            .where('p.id', pokemonId);
+            .where('p.id', pokemonId)
+            .cache(MINUTE);
 
         return queryRes.is_baby;
     }
@@ -161,7 +169,8 @@ class Database extends SQLDataSource {
                 'p.pokemon_species_id',
                 'ps.id'
             )
-            .where('p.id', pokemonId);
+            .where('p.id', pokemonId)
+            .cache(MINUTE);
 
         return queryRes.name;
     }
@@ -176,7 +185,8 @@ class Database extends SQLDataSource {
                 'p.pokemon_species_id',
                 'ps.id'
             )
-            .where('p.id', pokemonId);
+            .where('p.id', pokemonId)
+            .cache(MINUTE);
 
         return queryRes.capture_rate;
     }
@@ -196,7 +206,8 @@ class Database extends SQLDataSource {
                 'p.pokemon_species_id',
                 'ps.id'
             )
-            .where('p.id', pokemonId);
+            .where('p.id', pokemonId)
+            .cache(MINUTE);
 
         return queryRes.name;
     }
@@ -216,7 +227,8 @@ class Database extends SQLDataSource {
                 'p.pokemon_species_id',
                 'ps.id'
             )
-            .where('p.id', pokemonId);
+            .where('p.id', pokemonId)
+            .cache(MINUTE);
 
         return queryRes.name;
     }
@@ -231,7 +243,8 @@ class Database extends SQLDataSource {
                 'p.pokemon_species_id',
                 'ps.id'
             )
-            .where('p.id', pokemonId);
+            .where('p.id', pokemonId)
+            .cache(MINUTE);
 
         return queryRes.base_happiness;
     }
@@ -241,7 +254,8 @@ class Database extends SQLDataSource {
             .first()
             .select('base_experience')
             .from('pokemon_v2_pokemon')
-            .where({ id: pokemonId });
+            .where({ id: pokemonId })
+            .cache(MINUTE);
 
         return queryRes.base_experience;
     }
@@ -256,7 +270,8 @@ class Database extends SQLDataSource {
                 'p.pokemon_species_id',
                 'ps.id'
             )
-            .where('p.id', pokemonId);
+            .where('p.id', pokemonId)
+            .cache(MINUTE);
 
         return queryRes.hatch_counter;
     }
@@ -271,7 +286,8 @@ class Database extends SQLDataSource {
                 'p.pokemon_species_id',
                 'ps.id'
             )
-            .where('p.id', pokemonId);
+            .where('p.id', pokemonId)
+            .cache(MINUTE);
 
         return queryRes.gender_rate;
     }
@@ -293,7 +309,8 @@ class Database extends SQLDataSource {
                 'ps.id'
             )
             .where('gn.language_id', 9) // US English language_id is 9
-            .where('p.id', pokemonId);
+            .where('p.id', pokemonId)
+            .cache(MINUTE);
 
         return queryRes.name;
     }
@@ -314,7 +331,8 @@ class Database extends SQLDataSource {
                 'ps.id'
             )
             .where('pokedex.pokedex_id', 1) // pokedex_id for national pokedex is 1
-            .where('p.id', pokemonId);
+            .where('p.id', pokemonId)
+            .cache(MINUTE);
 
         return queryRes.pokedex_number;
     }
@@ -325,7 +343,8 @@ class Database extends SQLDataSource {
             .from('pokemon_v2_pokemonstat as pStat')
             .innerJoin('pokemon_v2_stat as s', 's.id', 'pStat.stat_id')
             .innerJoin('pokemon_v2_pokemon as p', 'p.id', 'pStat.pokemon_id')
-            .where('p.id', pokemonId);
+            .where('p.id', pokemonId)
+            .cache(MINUTE);
 
         return queryRes;
     }
@@ -341,7 +360,8 @@ class Database extends SQLDataSource {
                 'psn.pokemon_species_id'
             )
             .where('p.id', pokemonId)
-            .where('psn.language_id', 9); // language_id for US English is 9
+            .where('psn.language_id', 9) // language_id for US English is 9
+            .cache(MINUTE);
 
         return queryRes.genus;
     }
@@ -356,7 +376,8 @@ class Database extends SQLDataSource {
                 'p.pokemon_species_id',
                 'ps.id'
             )
-            .where('p.id', pokemonId);
+            .where('p.id', pokemonId)
+            .cache(MINUTE);
 
         const genderRatePercent =
             queryRes.gender_rate === -1 ? -1 : (queryRes.gender_rate / 8) * 100;
@@ -370,7 +391,8 @@ class Database extends SQLDataSource {
         const queryRes = await this.knex
             .select('t.type_id')
             .from('pokemon_v2_pokemontype as t')
-            .where('t.pokemon_id', pokemonId);
+            .where('t.pokemon_id', pokemonId)
+            .cache(MINUTE);
 
         const typeIds = queryRes.map((typeObj) => typeObj.type_id);
 
@@ -383,7 +405,8 @@ class Database extends SQLDataSource {
             .select('t.name')
             .from('pokemon_v2_typename as t')
             .where('t.type_id', typeId)
-            .where('t.language_id', 9);
+            .where('t.language_id', 9)
+            .cache(MINUTE);
 
         return queryRes.name;
     }
@@ -393,7 +416,8 @@ class Database extends SQLDataSource {
             .select('te.damage_type_id')
             .from('pokemon_v2_typeefficacy as te')
             .where('te.damage_factor', 200) // 200 = x2 damage
-            .where('te.target_type_id', typeId);
+            .where('te.target_type_id', typeId)
+            .cache(MINUTE);
 
         const typeIds = queryRes.map((typeObj) => typeObj.damage_type_id);
 
@@ -405,7 +429,8 @@ class Database extends SQLDataSource {
             .select('te.damage_type_id')
             .from('pokemon_v2_typeefficacy as te')
             .where('te.damage_factor', 50) // 50 = 1/2 damage
-            .where('te.target_type_id', typeId);
+            .where('te.target_type_id', typeId)
+            .cache(MINUTE);
 
         const typeIds = queryRes.map((typeObj) => typeObj.damage_type_id);
 
@@ -417,7 +442,8 @@ class Database extends SQLDataSource {
             .select('te.damage_type_id')
             .from('pokemon_v2_typeefficacy as te')
             .where('te.damage_factor', 0) // 0 = no damage
-            .where('te.target_type_id', typeId);
+            .where('te.target_type_id', typeId)
+            .cache(MINUTE);
 
         const typeIds = queryRes.map((typeObj) => typeObj.damage_type_id);
 
@@ -429,7 +455,8 @@ class Database extends SQLDataSource {
             .select('te.target_type_id')
             .from('pokemon_v2_typeefficacy as te')
             .where('te.damage_factor', 200)
-            .where('te.damage_type_id', typeId);
+            .where('te.damage_type_id', typeId)
+            .cache(MINUTE);
 
         const typeIds = queryRes.map((typeObj) => typeObj.target_type_id);
 
@@ -441,7 +468,8 @@ class Database extends SQLDataSource {
             .select('te.target_type_id')
             .from('pokemon_v2_typeefficacy as te')
             .where('te.damage_factor', 50)
-            .where('te.damage_type_id', typeId);
+            .where('te.damage_type_id', typeId)
+            .cache(MINUTE);
 
         const typeIds = queryRes.map((typeObj) => typeObj.target_type_id);
 
@@ -453,7 +481,8 @@ class Database extends SQLDataSource {
             .select('te.target_type_id')
             .from('pokemon_v2_typeefficacy as te')
             .where('te.damage_factor', 0)
-            .where('te.damage_type_id', typeId);
+            .where('te.damage_type_id', typeId)
+            .cache(MINUTE);
 
         const typeIds = queryRes.map((typeObj) => typeObj.target_type_id);
 
@@ -464,7 +493,8 @@ class Database extends SQLDataSource {
         const queryRes = await this.knex
             .select('t.pokemon_id')
             .from('pokemon_v2_pokemontype as t')
-            .where('t.type_id', typeId);
+            .where('t.type_id', typeId)
+            .cache(MINUTE);
 
         const typeIds = queryRes.map((typeObj) => typeObj.pokemon_id);
 
@@ -482,7 +512,8 @@ class Database extends SQLDataSource {
                 'p.pokemon_species_id',
                 'eg.pokemon_species_id'
             )
-            .where('p.id', pokemonId);
+            .where('p.id', pokemonId)
+            .cache(MINUTE);
 
         const eggGroupIds = queryRes.map(
             (eggGroupObj) => eggGroupObj.egg_group_id
@@ -497,7 +528,8 @@ class Database extends SQLDataSource {
             .select('egn.name')
             .from('pokemon_v2_egggroupname as egn')
             .where('egn.egg_group_id', eggGroupId)
-            .where('egn.language_id', 9);
+            .where('egn.language_id', 9)
+            .cache(MINUTE);
 
         return queryRes.name;
     }
@@ -511,7 +543,8 @@ class Database extends SQLDataSource {
                 'eg.pokemon_species_id',
                 'p.pokemon_species_id'
             )
-            .where('eg.egg_group_id', eggGroupId);
+            .where('eg.egg_group_id', eggGroupId)
+            .cache(MINUTE);
 
         const pokemonIds = queryRes.map((pokemon) => pokemon.id);
 
@@ -524,7 +557,8 @@ class Database extends SQLDataSource {
         const queryRes = await this.knex
             .select('pa.ability_id')
             .from('pokemon_v2_pokemonability as pa')
-            .where('pa.pokemon_id', pokemonId);
+            .where('pa.pokemon_id', pokemonId)
+            .cache(MINUTE);
 
         const abilityIds = queryRes.map((ability) => ability.ability_id);
 
@@ -537,7 +571,8 @@ class Database extends SQLDataSource {
             .select('pa.is_hidden')
             .from('pokemon_v2_pokemonability as pa')
             .where('pa.pokemon_id', pokemonId)
-            .where('pa.ability_id', abilityId);
+            .where('pa.ability_id', abilityId)
+            .cache(MINUTE);
 
         return queryRes.is_hidden;
     }
@@ -548,7 +583,8 @@ class Database extends SQLDataSource {
             .select('an.name')
             .from('pokemon_v2_abilityname as an')
             .where('an.ability_id', abilityId)
-            .where('an.language_id', 9);
+            .where('an.language_id', 9)
+            .cache(MINUTE);
 
         return queryRes.name;
     }
@@ -557,7 +593,8 @@ class Database extends SQLDataSource {
         const queryRes = await this.knex
             .select('pa.pokemon_id')
             .from('pokemon_v2_pokemonability as pa')
-            .where('pa.ability_id', abilityId);
+            .where('pa.ability_id', abilityId)
+            .cache(MINUTE);
 
         const pokemonIds = queryRes.map((pokemon) => pokemon.pokemon_id);
 
@@ -570,7 +607,8 @@ class Database extends SQLDataSource {
             .select('e.short_effect')
             .from('pokemon_v2_abilityeffecttext as e')
             .where('e.ability_id', abilityId)
-            .where('e.language_id', 9);
+            .where('e.language_id', 9)
+            .cache(MINUTE);
 
         return queryRes.short_effect;
     }
@@ -591,7 +629,8 @@ class Database extends SQLDataSource {
                 if (game) {
                     hasGame.where('v.name', game);
                 }
-            });
+            })
+            .cache(MINUTE);
 
         // if no game parameter is provided, the query returns all of the descriptions
         // return the description from the most recent game
@@ -604,7 +643,8 @@ class Database extends SQLDataSource {
         const queryRes = await this.knex
             .select('pgi.version_id')
             .from('pokemon_v2_pokemongameindex as pgi')
-            .where('pgi.pokemon_id', pokemonId);
+            .where('pgi.pokemon_id', pokemonId)
+            .cache(MINUTE);
 
         const gameIds = queryRes.map((gameObj) => gameObj.version_id);
 
@@ -612,14 +652,47 @@ class Database extends SQLDataSource {
     }
 
     async getGameName(gameId) {
-        const queryRes = await this.knex
-            .first()
-            .select('vn.name')
-            .from('pokemon_v2_versionname as vn')
-            .where('vn.version_id', gameId)
-            .where('vn.language_id', 9);
+        console.log('gameId in getGameName: ', gameId)
+        // let queryRes = await this.knex
+        //     .first()
+        //     .select('vn.name')
+        //     .from('pokemon_v2_versionname as vn')
+        //     .where('vn.version_id', gameId)
+        //     .where('vn.language_id', 9)
+        //     .cache(MINUTE);
 
-        return queryRes.name;
+        let queryRes = await this.knex
+            .first()
+            .select('v.name')
+            .from('pokemon_v2_version as v')
+            .where('v.id', gameId)
+        
+        console.log('getGameName initial queryRes: ', queryRes)
+
+        let name = queryRes.name;
+
+        if (!queryRes.name) {
+            console.log('hullo hullo')
+            // queryRes = await this.knex
+            //     .first()
+            //     .select('v.name')
+            //     .from('pokemon_v2_version as v')
+            //     .where('v.id', gameId)
+            
+            queryRes = await this.knex
+                .first()
+                .select('vn.name')
+                .from('pokemon_v2_versionname as vn')
+                .where('vn.version_id', gameId)
+                .where('vn.language_id', 9)
+                .cache(MINUTE);
+            
+            console.log('game name secondary queryRes: ', queryRes)
+        }
+        
+        
+
+        return name;
     }
 
     async getGameGeneration(gameId) {
@@ -634,7 +707,8 @@ class Database extends SQLDataSource {
             )
             .innerJoin('pokemon_v2_version as v', 'v.version_group_id', 'vg.id')
             .where('v.id', gameId)
-            .where('gn.language_id', 9);
+            .where('gn.language_id', 9)
+            .cache(MINUTE);
 
         return queryRes.name;
     }
@@ -648,7 +722,8 @@ class Database extends SQLDataSource {
                 'v.version_group_id',
                 'vgr.version_group_id'
             )
-            .where('v.id', gameId);
+            .where('v.id', gameId)
+            .cache(MINUTE);
 
         const regionIds = queryRes.map((region) => region.region_id);
 
@@ -663,7 +738,8 @@ class Database extends SQLDataSource {
             .select('rn.name')
             .from('pokemon_v2_regionname as rn')
             .where('rn.region_id', regionId)
-            .where('rn.language_id', 9);
+            .where('rn.language_id', 9)
+            .cache(MINUTE);
 
         return queryRes.name;
     }
@@ -677,7 +753,8 @@ class Database extends SQLDataSource {
                 'vgr.version_group_id',
                 'v.version_group_id'
             )
-            .where('vgr.region_id', regionId);
+            .where('vgr.region_id', regionId)
+            .cache(MINUTE);
 
         const gameIds = queryRes.map((gameObj) => gameObj.id);
 
@@ -688,7 +765,8 @@ class Database extends SQLDataSource {
         const queryRes = await this.knex
             .select('l.id')
             .from('pokemon_v2_location as l')
-            .where('l.region_id', regionId);
+            .where('l.region_id', regionId)
+            .cache(MINUTE);
 
         const locationIds = queryRes.map((locationObj) => locationObj.id);
 
@@ -705,7 +783,8 @@ class Database extends SQLDataSource {
                 'e.location_area_id',
                 'la.id'
             )
-            .where('e.pokemon_id', pokemonId);
+            .where('e.pokemon_id', pokemonId)
+            .cache(MINUTE);
 
         const locationIds = queryRes.map(
             (locationObj) => locationObj.location_id
@@ -717,14 +796,15 @@ class Database extends SQLDataSource {
     }
 
     async getLocationName(locationId) {
-        console.log('locationId: ', locationId);
+        // console.log('locationId: ', locationId);
         const queryRes = await this.knex
             .first()
             .select('l.name')
             .from('pokemon_v2_location as l')
-            .where('l.id', locationId);
+            .where('l.id', locationId)
+            .cache(MINUTE);
 
-        console.log('queryRes: ', queryRes);
+        // console.log('queryRes: ', queryRes);
         return queryRes.name;
     }
 
@@ -733,7 +813,8 @@ class Database extends SQLDataSource {
             .first()
             .select('l.region_id')
             .from('pokemon_v2_location as l')
-            .where('l.id', locationId);
+            .where('l.id', locationId)
+            .cache(MINUTE);
 
         return queryRes.region_id;
     }
@@ -752,7 +833,8 @@ class Database extends SQLDataSource {
                 'l.region_id',
                 'vgr.region_id'
             )
-            .where('l.id', locationId);
+            .where('l.id', locationId)
+            .cache(MINUTE);
 
         const gameIds = queryRes.map((gameObj) => gameObj.id);
 
@@ -768,7 +850,8 @@ class Database extends SQLDataSource {
                 'la.id',
                 'e.location_area_id'
             )
-            .where('la.location_id', locationId);
+            .where('la.location_id', locationId)
+            .cache(MINUTE);
 
         const pokemonIds = queryRes.map((pokemonObj) => pokemonObj.pokemon_id);
 
@@ -786,7 +869,8 @@ class Database extends SQLDataSource {
                 'pm.version_group_id'
             )
             .where('pm.pokemon_id', pokemonId)
-            .where('v.name', gameName);
+            .where('v.name', gameName)
+            .cache(MINUTE);
 
         const moveIds = queryRes.map((moveObj) => moveObj.move_id);
 
@@ -801,7 +885,8 @@ class Database extends SQLDataSource {
             .select('mn.name')
             .from('pokemon_v2_movename as mn')
             .where('mn.move_id', moveId)
-            .where('mn.language_id', 9);
+            .where('mn.language_id', 9)
+            .cache(MINUTE);
 
         return queryRes.name;
     }
@@ -811,7 +896,8 @@ class Database extends SQLDataSource {
             .first()
             .select('m.type_id')
             .from('pokemon_v2_move as m')
-            .where('m.id', moveId);
+            .where('m.id', moveId)
+            .cache(MINUTE);
 
         return queryRes.type_id;
     }
@@ -821,7 +907,8 @@ class Database extends SQLDataSource {
             .first()
             .select('m.power')
             .from('pokemon_v2_move as m')
-            .where('m.id', moveId);
+            .where('m.id', moveId)
+            .cache(MINUTE);
 
         return queryRes.power;
     }
@@ -831,7 +918,8 @@ class Database extends SQLDataSource {
             .first()
             .select('m.pp')
             .from('pokemon_v2_move as m')
-            .where('m.id', moveId);
+            .where('m.id', moveId)
+            .cache(MINUTE);
 
         return queryRes.pp;
     }
@@ -841,7 +929,8 @@ class Database extends SQLDataSource {
             .first()
             .select('m.accuracy')
             .from('pokemon_v2_move as m')
-            .where('m.id', moveId);
+            .where('m.id', moveId)
+            .cache(MINUTE);
 
         return queryRes.accuracy;
     }
@@ -851,7 +940,8 @@ class Database extends SQLDataSource {
             .first()
             .select('m.priority')
             .from('pokemon_v2_move as m')
-            .where('m.id', moveId);
+            .where('m.id', moveId)
+            .cache(MINUTE);
 
         return queryRes.priority;
     }
@@ -861,7 +951,8 @@ class Database extends SQLDataSource {
             .first()
             .select('m.move_effect_chance')
             .from('pokemon_v2_move as m')
-            .where('m.id', moveId);
+            .where('m.id', moveId)
+            .cache(MINUTE);
 
         return queryRes.move_effect_chance;
     }
@@ -876,7 +967,8 @@ class Database extends SQLDataSource {
                 'm.move_damage_class_id',
                 'mdc.id'
             )
-            .where('m.id', moveId);
+            .where('m.id', moveId)
+            .cache(MINUTE);
 
         return queryRes.name;
     }
@@ -892,7 +984,8 @@ class Database extends SQLDataSource {
                 'e.move_effect_id'
             )
             .where('m.id', moveId)
-            .where('e.language_id', 9);
+            .where('e.language_id', 9)
+            .cache(MINUTE);
 
         // replace the string "$effect_chance" with the actual percentage
         return queryRes.short_effect.replace(
@@ -916,7 +1009,8 @@ class Database extends SQLDataSource {
                 if (gameName) {
                     hasGame.where('v.name', gameName);
                 }
-            });
+            })
+            .cache(MINUTE);
 
         // if no game parameter is provided, the query returns all of the descriptions
         // return the description from the most recent game, with the white space all normalized with spaces
@@ -937,7 +1031,8 @@ class Database extends SQLDataSource {
                 'm.move_meta_ailment_id',
                 'ma.id'
             )
-            .where('m.move_id', moveId);
+            .where('m.move_id', moveId)
+            .cache(MINUTE);
 
         return queryRes.name;
     }
@@ -953,7 +1048,8 @@ class Database extends SQLDataSource {
             )
             .where('pm.pokemon_id', pokemonId)
             .where('pm.move_id', moveId)
-            .where('v.name', gameName);
+            .where('v.name', gameName)
+            .cache(MINUTE);
 
         // const methodIds = queryRes.map((method) => method.move_learn_method_id);
 
@@ -965,7 +1061,8 @@ class Database extends SQLDataSource {
             .first()
             .select('name')
             .from('pokemon_v2_movelearnmethod')
-            .where({ id: learnMethodId });
+            .where({ id: learnMethodId })
+            .cache(MINUTE);
 
         return queryRes.name;
     }
@@ -1003,7 +1100,8 @@ class Database extends SQLDataSource {
             )
             .where('pm.pokemon_id', pokemonId)
             .where('pm.move_id', moveId)
-            .where('v.name', gameName);
+            .where('v.name', gameName)
+            .cache(MINUTE);
 
         return queryRes.level;
     }
@@ -1023,7 +1121,8 @@ class Database extends SQLDataSource {
                 'm.generation_id',
                 'vg.generation_id'
             )
-            .where('m.id', moveId);
+            .where('m.id', moveId)
+            .cache(MINUTE);
 
         const gameIds = queryRes.map((gameObj) => gameObj.id);
         return gameIds;
@@ -1055,7 +1154,8 @@ class Database extends SQLDataSource {
                 'p.pokemon_species_id',
                 'pe.evolved_species_id'
             )
-            .where('p.id', pokemonId);
+            .where('p.id', pokemonId)
+            .cache(MINUTE);
 
         const evolutionCriteriaPromise = queryRes
             .map((criteriaObj) => {
@@ -1136,7 +1236,8 @@ class Database extends SQLDataSource {
                 'p.pokemon_species_id',
                 'pe.evolved_species_id'
             )
-            .where('p.id', pokemonId);
+            .where('p.id', pokemonId)
+            .cache(MINUTE);
 
         return queryRes ? queryRes.name : null;
     }
@@ -1151,13 +1252,15 @@ class Database extends SQLDataSource {
                 'p.pokemon_species_id',
                 'ps.id'
             )
-            .where('p.id', pokemonId);
+            .where('p.id', pokemonId)
+            .cache(MINUTE);
 
         const queryRes = await this.knex
             .first()
             .select('p.id')
             .from('pokemon_v2_pokemon as p')
-            .where('p.pokemon_species_id', evolvesFromSpeciesId);
+            .where('p.pokemon_species_id', evolvesFromSpeciesId)
+            .cache(MINUTE);
 
         // returns null if the pokemon doesn't evolve from anything
         return queryRes ? queryRes.id : null;
@@ -1173,7 +1276,8 @@ class Database extends SQLDataSource {
                 'ps.id',
                 'p.pokemon_species_id'
             )
-            .where('ps.evolves_from_species_id', pokemonId);
+            .where('ps.evolves_from_species_id', pokemonId)
+            .cache(MINUTE);
 
         const pokemonIds = queryRes.map((pokemonObj) => pokemonObj.id);
         return pokemonIds.length ? pokemonIds : null;
@@ -1192,7 +1296,10 @@ class Database extends SQLDataSource {
             )
             .innerJoin('pokemon_v2_version as v', 'v.id', 'ft.version_id')
             .where('ft.language_id', 9)
-            .where('p.id', pokemonId);
+            .where('p.id', pokemonId)
+            .cache(MINUTE);
+        
+        // console.log('getSinglePokemonPokedexEntries queryRes: ', queryRes)
 
         const dexEntries = queryRes.map((entry) => {
             // make all whitespace consistent
@@ -1200,6 +1307,8 @@ class Database extends SQLDataSource {
 
             return { description: entry.flavor_text, gameId: entry.id };
         });
+
+        console.log('getSinglePokemonPokedexEntries dexEntries: ', dexEntries)
 
         return dexEntries;
     }
@@ -1218,7 +1327,8 @@ class Database extends SQLDataSource {
             .first()
             .select('p.name')
             .from('pokemon_v2_pokemon as p')
-            .where({ id: pokemonId });
+            .where({ id: pokemonId })
+            .cache(MINUTE);
 
         const name = nameQuery.name;
 
@@ -1229,7 +1339,8 @@ class Database extends SQLDataSource {
                 .select('pfs.sprites')
                 .from('pokemon_v2_pokemonformsprites as pfs')
                 .innerJoin('pokemon_v2_pokemonform as pf', 'pf.id', 'pfs.id')
-                .where('pf.pokemon_id', pokemonId);
+                .where('pf.pokemon_id', pokemonId)
+                .cache(MINUTE);
 
             front_default_img = alolanQuery.sprites;
             front_default_img = `${baseFilePath}/${pokemonId}-alola.png`;
@@ -1256,7 +1367,8 @@ class Database extends SQLDataSource {
             .select('in.name')
             .from('pokemon_v2_itemname as in')
             .where({ item_id: itemId })
-            .where({ language_id: 9 });
+            .where({ language_id: 9 })
+            .cache(MINUTE);
 
         return queryRes.name;
     }
@@ -1266,7 +1378,8 @@ class Database extends SQLDataSource {
             .first()
             .select('cost')
             .from('pokemon_v2_item')
-            .where({ id: itemId });
+            .where({ id: itemId })
+            .cache(MINUTE);
 
         return queryRes.cost;
     }
@@ -1283,7 +1396,8 @@ class Database extends SQLDataSource {
             )
             .innerJoin('pokemon_v2_item as i', 'i.item_category_id', 'ic.id')
             .where('i.id', itemId)
-            .where('ipn.language_id', 9);
+            .where('ipn.language_id', 9)
+            .cache(MINUTE);
 
         return queryRes.name;
     }
@@ -1294,7 +1408,8 @@ class Database extends SQLDataSource {
             .select('short_effect')
             .from('pokemon_v2_itemeffecttext')
             .where({ item_id: itemId })
-            .where({ language_id: 9 });
+            .where({ language_id: 9 })
+            .cache(MINUTE);
 
         // normalize the white space
         return queryRes.short_effect.replace(/\s/gm, ' ');
@@ -1315,7 +1430,8 @@ class Database extends SQLDataSource {
                 if (gameName) {
                     hasGame.where('v.name', gameName);
                 }
-            });
+            })
+            .cache(MINUTE);
 
         // if no game parameter is provided, the query returns all of the descriptions
         // return the description from the most recent game, with the white space all normalized with spaces
@@ -1334,7 +1450,8 @@ class Database extends SQLDataSource {
             .first()
             .select('i.name')
             .from('pokemon_v2_item as i')
-            .where('i.id', itemId);
+            .where('i.id', itemId)
+            .cache(MINUTE);
 
         return `${baseFilePath}/${queryRes.name}`;
     }
@@ -1368,7 +1485,8 @@ class Database extends SQLDataSource {
             .first()
             .select('name')
             .from('pokemon_v2_gender')
-            .where({ id: genderId });
+            .where({ id: genderId })
+            .cache(MINUTE);
 
         return queryRes.name;
     }

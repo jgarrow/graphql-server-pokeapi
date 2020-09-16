@@ -6,7 +6,6 @@ const Database = require('./database');
 const knexConfig = {
     client: 'sqlite3',
     connection: {
-        /* CONNECTION INFO */
         filename: './data/db.sqlite3',
     },
     useNullAsDefault: true,
