@@ -1299,9 +1299,10 @@ class Database extends SQLDataSource {
     }
 
     async getSinglePokemonEvolvesToPokemonId(pokemonId) {
+        console.log('pokemonId: ', pokemonId);
         // get pokemon who evolves from my current pokemonId
         const queryRes = await this.knex
-            .select('p.id')
+            .select('p.id', 'p.name')
             .from('pokemon_v2_pokemon as p')
             .innerJoin(
                 'pokemon_v2_pokemonspecies as ps',
@@ -1311,8 +1312,60 @@ class Database extends SQLDataSource {
             .where('ps.evolves_from_species_id', pokemonId)
             .cache(MINUTE);
 
-        const pokemonIds = queryRes.map((pokemonObj) => pokemonObj.id);
-        return pokemonIds.length ? pokemonIds : null;
+        // for Kirlia, queryRes comes back like this:
+        // [
+        //     { id: 282, name: 'gardevoir' },
+        //     { id: 10051, name: 'gardevoir-mega' },
+        //     { id: 475, name: 'gallade' },
+        //     { id: 10068, name: 'gallade-mega' },
+        // ];
+
+        // remove any mega evolutions
+        const filteredRes = queryRes.filter(
+            (mon) => !mon.name.includes('mega')
+        );
+
+        const pokemonIds = filteredRes.map((pokemonObj) => pokemonObj.id);
+
+        // check if requested pokemon is a mega evolution
+        const nameRes = await this.knex
+            .first()
+            .select('p.name')
+            .from('pokemon_v2_pokemon as p')
+            .where({ id: pokemonId });
+
+        let megas = [];
+
+        // if it's not a mega, check if it can mega evolve
+        if (!nameRes.name.includes('mega')) {
+            // get pokemon species id of requested pokeon
+            const res = await this.knex
+                .first()
+                .select('p.pokemon_species_id')
+                .from('pokemon_v2_pokemon as p')
+                .where('p.id', pokemonId);
+
+            // get all pokemon ids associated with the pokemon species id
+            const multipleFormsRes = await this.knex
+                .select('p.id', 'p.name')
+                .from('pokemon_v2_pokemon as p')
+                .where('p.pokemon_species_id', res.pokemon_species_id);
+
+            // get all of the ids for the megas
+            megas = multipleFormsRes.filter(
+                (mon) => mon.id !== pokemonId && mon.name.includes('mega')
+            );
+            megas = megas.map((obj) => obj.id);
+        }
+
+        // return either array of ints (pokemon ids) or null
+        if (megas.length) {
+            return megas;
+        } else if (pokemonIds.length) {
+            return pokemonIds;
+        } else {
+            null;
+        }
     }
 
     // Pokedex entry methods
