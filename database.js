@@ -2,6 +2,7 @@
 
 const { SQLDataSource } = require('datasource-sql');
 const process = require('process');
+const resolve = require('resolve');
 const ColorThief = require('colorthief');
 
 const MINUTE = 60 * 10000;
@@ -187,19 +188,18 @@ class Database extends SQLDataSource {
     }
 
     async getSinglePokemonDominantColor(pokemonId) {
-        // const imgSrc = `https://pokeres.bastionbot.org/images/pokemon/${pokemonId}.png`;
+        try {
+            const rgbValues = await ColorThief.getColor(
+                `./img/official-artwork/${pokemonId}.png`
+            );
 
-        const img = resolve(process.cwd(), '');
+            const color = `rgb(${rgbValues[0]}, ${rgbValues[1]}, ${rgbValues[2]})`;
 
-        ColorThief.getColor(img)
-            .then((color) => {
-                console.log(`dominant color for id #${pokemonId}: `, color);
-                return color;
-            })
-            .catch((err) => {
-                console.log('Error getting color: ', err);
-                return err;
-            });
+            return color;
+        } catch (err) {
+            console.log('Error getting color: ', err);
+            return err;
+        }
     }
 
     async getSinglePokemonCaptureRate(pokemonId) {
