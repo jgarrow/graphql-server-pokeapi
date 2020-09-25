@@ -34,6 +34,7 @@ const typeDefs = gql`
         height: Int # height in decimeters
         weight: Int # weight in hectograms
         color: String
+        dominant_color: String # dominant color of pokemon image taken from ColorThief to set background color in front end
         capture_rate: Int
         growth_rate: String
         shape: String

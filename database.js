@@ -1,6 +1,8 @@
 // https://github.com/cvburgess/SQLDataSource
 
 const { SQLDataSource } = require('datasource-sql');
+const process = require('process');
+const ColorThief = require('colorthief');
 
 const MINUTE = 60 * 10000;
 
@@ -55,7 +57,7 @@ class Database extends SQLDataSource {
             .cache(MINUTE);
 
         // console.log('queryRes: ', queryRes)
-        return queryRes.name;
+        return queryRes ? queryRes.name : null;
     }
 
     async getAllEggGroupIds() {
@@ -80,7 +82,10 @@ class Database extends SQLDataSource {
     }
 
     async getAllMoveIds() {
-        const queryRes = await this.knex.select('id').from('pokemon_v2_move').cache(MINUTE);
+        const queryRes = await this.knex
+            .select('id')
+            .from('pokemon_v2_move')
+            .cache(MINUTE);
 
         const moveIds = queryRes.map((move) => {
             return { moveId: move.id };
@@ -101,7 +106,10 @@ class Database extends SQLDataSource {
     }
 
     async getAllRegionIds() {
-        const queryRes = await this.knex.select('id').from('pokemon_v2_region').cache(MINUTE);
+        const queryRes = await this.knex
+            .select('id')
+            .from('pokemon_v2_region')
+            .cache(MINUTE);
 
         const regionIds = queryRes.map((region) => region.id);
 
@@ -109,7 +117,10 @@ class Database extends SQLDataSource {
     }
 
     async getAllItemIds() {
-        const queryRes = await this.knex.select('id').from('pokemon_v2_item').cache(MINUTE);
+        const queryRes = await this.knex
+            .select('id')
+            .from('pokemon_v2_item')
+            .cache(MINUTE);
 
         const itemIds = queryRes.map((item) => item.id);
 
@@ -124,7 +135,7 @@ class Database extends SQLDataSource {
             .where({ id: pokemonId })
             .cache(MINUTE);
 
-        return queryRes.height;
+        return queryRes ? queryRes.height : null;
     }
 
     async getSinglePokemonWeight(pokemonId) {
@@ -135,7 +146,7 @@ class Database extends SQLDataSource {
             .where({ id: pokemonId })
             .cache(MINUTE);
 
-        return queryRes.weight;
+        return queryRes ? queryRes.weight : null;
     }
 
     async getSinglePokemonIsBaby(pokemonId) {
@@ -151,7 +162,7 @@ class Database extends SQLDataSource {
             .where('p.id', pokemonId)
             .cache(MINUTE);
 
-        return queryRes.is_baby;
+        return queryRes ? queryRes.is_baby : null;
     }
 
     async getSinglePokemonColor(pokemonId) {
@@ -172,7 +183,23 @@ class Database extends SQLDataSource {
             .where('p.id', pokemonId)
             .cache(MINUTE);
 
-        return queryRes.name;
+        return queryRes ? queryRes.name : null;
+    }
+
+    async getSinglePokemonDominantColor(pokemonId) {
+        // const imgSrc = `https://pokeres.bastionbot.org/images/pokemon/${pokemonId}.png`;
+
+        const img = resolve(process.cwd(), '');
+
+        ColorThief.getColor(img)
+            .then((color) => {
+                console.log(`dominant color for id #${pokemonId}: `, color);
+                return color;
+            })
+            .catch((err) => {
+                console.log('Error getting color: ', err);
+                return err;
+            });
     }
 
     async getSinglePokemonCaptureRate(pokemonId) {
@@ -188,7 +215,7 @@ class Database extends SQLDataSource {
             .where('p.id', pokemonId)
             .cache(MINUTE);
 
-        return queryRes.capture_rate;
+        return queryRes ? queryRes.capture_rate : null;
     }
 
     async getSinglePokemonGrowthRate(pokemonId) {
@@ -209,7 +236,7 @@ class Database extends SQLDataSource {
             .where('p.id', pokemonId)
             .cache(MINUTE);
 
-        return queryRes.name;
+        return queryRes ? queryRes.name : null;
     }
 
     async getSinglePokemonShape(pokemonId) {
@@ -230,7 +257,9 @@ class Database extends SQLDataSource {
             .where('p.id', pokemonId)
             .cache(MINUTE);
 
-        return queryRes.name;
+        console.log('shape queryRes: ', queryRes);
+
+        return queryRes ? queryRes.name : null;
     }
 
     async getSinglePokemonBaseHappiness(pokemonId) {
@@ -246,7 +275,7 @@ class Database extends SQLDataSource {
             .where('p.id', pokemonId)
             .cache(MINUTE);
 
-        return queryRes.base_happiness;
+        return queryRes ? queryRes.base_happiness : null;
     }
 
     async getSinglePokemonBaseExperience(pokemonId) {
@@ -257,7 +286,7 @@ class Database extends SQLDataSource {
             .where({ id: pokemonId })
             .cache(MINUTE);
 
-        return queryRes.base_experience;
+        return queryRes ? queryRes.base_experience : null;
     }
 
     async getSinglePokemonHatchCounter(pokemonId) {
@@ -273,7 +302,7 @@ class Database extends SQLDataSource {
             .where('p.id', pokemonId)
             .cache(MINUTE);
 
-        return queryRes.hatch_counter;
+        return queryRes ? queryRes.hatch_counter : null;
     }
 
     async getSinglePokemonGenderRate(pokemonId) {
@@ -289,7 +318,7 @@ class Database extends SQLDataSource {
             .where('p.id', pokemonId)
             .cache(MINUTE);
 
-        return queryRes.gender_rate;
+        return queryRes ? queryRes.gender_rate : null;
     }
 
     async getSinglePokemonGeneration(pokemonId) {
@@ -312,7 +341,7 @@ class Database extends SQLDataSource {
             .where('p.id', pokemonId)
             .cache(MINUTE);
 
-        return queryRes.name;
+        return queryRes ? queryRes.name : null;
     }
 
     async getSinglePokemonNationalDexNum(pokemonId) {
@@ -334,7 +363,7 @@ class Database extends SQLDataSource {
             .where('p.id', pokemonId)
             .cache(MINUTE);
 
-        return queryRes.pokedex_number;
+        return queryRes ? queryRes.pokedex_number : null;
     }
 
     async getSinglePokemonStats(pokemonId) {
@@ -346,7 +375,7 @@ class Database extends SQLDataSource {
             .where('p.id', pokemonId)
             .cache(MINUTE);
 
-        return queryRes;
+        return queryRes ? queryRes : null;
     }
 
     async getSinglePokemonGenus(pokemonId) {
@@ -363,7 +392,7 @@ class Database extends SQLDataSource {
             .where('psn.language_id', 9) // language_id for US English is 9
             .cache(MINUTE);
 
-        return queryRes.genus;
+        return queryRes ? queryRes.genus : null;
     }
 
     async getSinglePokemonGenderRate(pokemonId) {
@@ -408,7 +437,7 @@ class Database extends SQLDataSource {
             .where('t.language_id', 9)
             .cache(MINUTE);
 
-        return queryRes.name;
+        return queryRes ? queryRes.name : null;
     }
 
     async getTypeDoubleDamageFromIds(typeId) {
@@ -531,7 +560,7 @@ class Database extends SQLDataSource {
             .where('egn.language_id', 9)
             .cache(MINUTE);
 
-        return queryRes.name;
+        return queryRes ? queryRes.name : null;
     }
 
     async getEggGroupPokemonIds(eggGroupId) {
@@ -574,7 +603,7 @@ class Database extends SQLDataSource {
             .where('pa.ability_id', abilityId)
             .cache(MINUTE);
 
-        return queryRes.is_hidden;
+        return queryRes ? queryRes.is_hidden : null;
     }
 
     async getAbilityName(abilityId) {
@@ -586,7 +615,7 @@ class Database extends SQLDataSource {
             .where('an.language_id', 9)
             .cache(MINUTE);
 
-        return queryRes.name;
+        return queryRes ? queryRes.name : null;
     }
 
     async getAbilityPokemonIds(abilityId) {
@@ -610,7 +639,7 @@ class Database extends SQLDataSource {
             .where('e.language_id', 9)
             .cache(MINUTE);
 
-        return queryRes.short_effect;
+        return queryRes ? queryRes.short_effect : null;
     }
 
     async getAbilityDescription(abilityId, game) {
@@ -634,7 +663,7 @@ class Database extends SQLDataSource {
 
         // if no game parameter is provided, the query returns all of the descriptions
         // return the description from the most recent game
-        return queryRes[queryRes.length - 1].flavor_text;
+        return queryRes ? queryRes[queryRes.length - 1].flavor_text : null;
     }
 
     // Game methods
@@ -652,7 +681,7 @@ class Database extends SQLDataSource {
     }
 
     async getGameName(gameId) {
-        console.log('gameId in getGameName: ', gameId)
+        // console.log('gameId in getGameName: ', gameId)
         // let queryRes = await this.knex
         //     .first()
         //     .select('vn.name')
@@ -665,20 +694,20 @@ class Database extends SQLDataSource {
             .first()
             .select('v.name')
             .from('pokemon_v2_version as v')
-            .where('v.id', gameId)
-        
-        console.log('getGameName initial queryRes: ', queryRes)
+            .where('v.id', gameId);
+
+        // console.log('getGameName initial queryRes: ', queryRes)
 
         let name = queryRes.name;
 
         if (!queryRes.name) {
-            console.log('hullo hullo')
+            // console.log('hullo hullo')
             // queryRes = await this.knex
             //     .first()
             //     .select('v.name')
             //     .from('pokemon_v2_version as v')
             //     .where('v.id', gameId)
-            
+
             queryRes = await this.knex
                 .first()
                 .select('vn.name')
@@ -686,11 +715,9 @@ class Database extends SQLDataSource {
                 .where('vn.version_id', gameId)
                 .where('vn.language_id', 9)
                 .cache(MINUTE);
-            
-            console.log('game name secondary queryRes: ', queryRes)
+
+            // console.log('game name secondary queryRes: ', queryRes)
         }
-        
-        
 
         return name;
     }
@@ -710,7 +737,7 @@ class Database extends SQLDataSource {
             .where('gn.language_id', 9)
             .cache(MINUTE);
 
-        return queryRes.name;
+        return queryRes ? queryRes.name : null;
     }
 
     async getGameRegionIds(gameId) {
@@ -741,7 +768,7 @@ class Database extends SQLDataSource {
             .where('rn.language_id', 9)
             .cache(MINUTE);
 
-        return queryRes.name;
+        return queryRes ? queryRes.name : null;
     }
 
     async getRegionGameIds(regionId) {
@@ -805,7 +832,7 @@ class Database extends SQLDataSource {
             .cache(MINUTE);
 
         // console.log('queryRes: ', queryRes);
-        return queryRes.name;
+        return queryRes ? queryRes.name : null;
     }
 
     async getLocationRegionId(locationId) {
@@ -816,7 +843,7 @@ class Database extends SQLDataSource {
             .where('l.id', locationId)
             .cache(MINUTE);
 
-        return queryRes.region_id;
+        return queryRes ? queryRes.region_id : null;
     }
 
     async getLocationGameIds(locationId) {
@@ -888,7 +915,7 @@ class Database extends SQLDataSource {
             .where('mn.language_id', 9)
             .cache(MINUTE);
 
-        return queryRes.name;
+        return queryRes ? queryRes.name : null;
     }
 
     async getMoveTypeId(moveId) {
@@ -899,7 +926,7 @@ class Database extends SQLDataSource {
             .where('m.id', moveId)
             .cache(MINUTE);
 
-        return queryRes.type_id;
+        return queryRes ? queryRes.type_id : null;
     }
 
     async getMovePower(moveId) {
@@ -910,7 +937,7 @@ class Database extends SQLDataSource {
             .where('m.id', moveId)
             .cache(MINUTE);
 
-        return queryRes.power;
+        return queryRes ? queryRes.power : null;
     }
 
     async getMovePp(moveId) {
@@ -921,7 +948,7 @@ class Database extends SQLDataSource {
             .where('m.id', moveId)
             .cache(MINUTE);
 
-        return queryRes.pp;
+        return queryRes ? queryRes.pp : null;
     }
 
     async getMoveAccuracy(moveId) {
@@ -932,7 +959,7 @@ class Database extends SQLDataSource {
             .where('m.id', moveId)
             .cache(MINUTE);
 
-        return queryRes.accuracy;
+        return queryRes ? queryRes.accuracy : null;
     }
 
     async getMovePriority(moveId) {
@@ -943,7 +970,7 @@ class Database extends SQLDataSource {
             .where('m.id', moveId)
             .cache(MINUTE);
 
-        return queryRes.priority;
+        return queryRes ? queryRes.priority : null;
     }
 
     async getMoveEffectChance(moveId) {
@@ -954,7 +981,7 @@ class Database extends SQLDataSource {
             .where('m.id', moveId)
             .cache(MINUTE);
 
-        return queryRes.move_effect_chance;
+        return queryRes ? queryRes.move_effect_chance : null;
     }
 
     async getMoveDamageClass(moveId) {
@@ -970,7 +997,7 @@ class Database extends SQLDataSource {
             .where('m.id', moveId)
             .cache(MINUTE);
 
-        return queryRes.name;
+        return queryRes ? queryRes.name : null;
     }
 
     async getMoveEffect(moveId) {
@@ -988,10 +1015,12 @@ class Database extends SQLDataSource {
             .cache(MINUTE);
 
         // replace the string "$effect_chance" with the actual percentage
-        return queryRes.short_effect.replace(
-            '$effect_chance',
-            queryRes.move_effect_chance
-        );
+        return queryRes
+            ? queryRes.short_effect.replace(
+                  '$effect_chance',
+                  queryRes.move_effect_chance
+              )
+            : null;
     }
 
     async getMoveDescription(moveId, gameName) {
@@ -1034,7 +1063,7 @@ class Database extends SQLDataSource {
             .where('m.move_id', moveId)
             .cache(MINUTE);
 
-        return queryRes.name;
+        return queryRes ? queryRes.name : null;
     }
 
     async getSinglePokemonLearnMethodIds(pokemonId, moveId, gameName) {
@@ -1053,7 +1082,7 @@ class Database extends SQLDataSource {
 
         // const methodIds = queryRes.map((method) => method.move_learn_method_id);
 
-        return queryRes;
+        return queryRes ? queryRes : null;
     }
 
     async getSinglePokemonMoveLearnMethodName(learnMethodId) {
@@ -1064,7 +1093,7 @@ class Database extends SQLDataSource {
             .where({ id: learnMethodId })
             .cache(MINUTE);
 
-        return queryRes.name;
+        return queryRes ? queryRes.name : null;
     }
 
     // async getSinglePokemonMoveLearnMethod(pokemonId, moveId, gameName) {
@@ -1103,7 +1132,7 @@ class Database extends SQLDataSource {
             .where('v.name', gameName)
             .cache(MINUTE);
 
-        return queryRes.level;
+        return queryRes ? queryRes.level : null;
     }
 
     // games the move debuted in (not tied to a specific Pokemon)
@@ -1243,7 +1272,7 @@ class Database extends SQLDataSource {
     }
 
     async getSinglePokemonEvolvesFromPokemonId(pokemonId) {
-        const evolvesFromSpeciesId = this.knex
+        const evolvesFromSpeciesId = await this.knex
             .first()
             .select('ps.evolves_from_species_id')
             .from('pokemon_v2_pokemonspecies as ps')
@@ -1259,7 +1288,10 @@ class Database extends SQLDataSource {
             .first()
             .select('p.id')
             .from('pokemon_v2_pokemon as p')
-            .where('p.pokemon_species_id', evolvesFromSpeciesId)
+            .where(
+                'p.pokemon_species_id',
+                evolvesFromSpeciesId.evolves_from_species_id
+            )
             .cache(MINUTE);
 
         // returns null if the pokemon doesn't evolve from anything
@@ -1298,7 +1330,7 @@ class Database extends SQLDataSource {
             .where('ft.language_id', 9)
             .where('p.id', pokemonId)
             .cache(MINUTE);
-        
+
         // console.log('getSinglePokemonPokedexEntries queryRes: ', queryRes)
 
         const dexEntries = queryRes.map((entry) => {
@@ -1308,7 +1340,7 @@ class Database extends SQLDataSource {
             return { description: entry.flavor_text, gameId: entry.id };
         });
 
-        console.log('getSinglePokemonPokedexEntries dexEntries: ', dexEntries)
+        // console.log('getSinglePokemonPokedexEntries dexEntries: ', dexEntries)
 
         return dexEntries;
     }
@@ -1320,7 +1352,7 @@ class Database extends SQLDataSource {
         // const baseFilePath = 'src/images/sprites/pokemon';
         const baseFilePath = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon`;
         let front_default_img = `${baseFilePath}/${pokemonId}.png`;
-        
+
         // try if pokemon/pokemonId.sprites === null, check sprites in .form, parse the image url and create it dynamically
 
         const nameQuery = await this.knex
@@ -1370,7 +1402,7 @@ class Database extends SQLDataSource {
             .where({ language_id: 9 })
             .cache(MINUTE);
 
-        return queryRes.name;
+        return queryRes ? queryRes.name : null;
     }
 
     async getItemCost(itemId) {
@@ -1381,7 +1413,7 @@ class Database extends SQLDataSource {
             .where({ id: itemId })
             .cache(MINUTE);
 
-        return queryRes.cost;
+        return queryRes ? queryRes.cost : null;
     }
 
     async getItemBagPocket(itemId) {
@@ -1399,7 +1431,7 @@ class Database extends SQLDataSource {
             .where('ipn.language_id', 9)
             .cache(MINUTE);
 
-        return queryRes.name;
+        return queryRes ? queryRes.name : null;
     }
 
     async getItemEffect(itemId) {
@@ -1412,7 +1444,7 @@ class Database extends SQLDataSource {
             .cache(MINUTE);
 
         // normalize the white space
-        return queryRes.short_effect.replace(/\s/gm, ' ');
+        return queryRes ? queryRes.short_effect.replace(/\s/gm, ' ') : null;
     }
 
     async getItemDescription(itemId, gameName) {
@@ -1488,7 +1520,7 @@ class Database extends SQLDataSource {
             .where({ id: genderId })
             .cache(MINUTE);
 
-        return queryRes.name;
+        return queryRes ? queryRes.name : null;
     }
 }
 
