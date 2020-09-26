@@ -207,6 +207,9 @@ const resolvers = {
         pokedex_entries: (parent, args, { dataSources }) => {
             return dataSources.db.getSinglePokemonPokedexEntries(parent);
         },
+        variants: (parent, args, { dataSources }) => {
+            return dataSources.db.getSinglePokemonVariants(parent);
+        },
     },
     Stats: {
         hp: (parent, args, { dataSources }) => {

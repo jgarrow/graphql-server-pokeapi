@@ -425,6 +425,32 @@ class Database extends SQLDataSource {
         return genderRatePercent;
     }
 
+    async getSinglePokemonVariants(pokemonId) {
+        // get all forms/variants for a given pokemon id
+
+        // get pokemon species id
+        const speciesIdRes = await this.knex
+            .first()
+            .select('ps.id')
+            .from('pokemon_v2_pokemonspecies as ps')
+            .innerJoin(
+                'pokemon_v2_pokemon as p',
+                'p.pokemon_species_id',
+                'ps.id'
+            )
+            .where('p.id', pokemonId);
+
+        // get ids of all pokemon associated with pokemon species id
+        const queryRes = await this.knex
+            .select('p.id')
+            .from('pokemon_v2_pokemon as p')
+            .where('p.pokemon_species_id', speciesIdRes.id);
+
+        const variantIds = queryRes.map((mon) => mon.id);
+
+        return queryRes ? variantIds : null;
+    }
+
     // Type methods
 
     async getSinglePokemonTypeIds(pokemonId) {
