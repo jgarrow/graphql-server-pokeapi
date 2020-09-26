@@ -9,10 +9,6 @@ const typeDefs = gql`
         | Gender
         | OtherEvolutionCriteria
 
-    type Criteria {
-        criteria: [EvolutionCriteria]
-    }
-
     type Pokemon { # query with info wanted for my pokedex for individual Pokemon info
         sprites: Sprites # array of Sprite objects
         pokedex_entries: [DexEntry] # array of DexEntry objects
@@ -37,6 +33,15 @@ const typeDefs = gql`
         nat_dex_num: Int
         height: Int # height in decimeters
         weight: Int # weight in hectograms
+        color: String
+        dominant_color: String # dominant color of pokemon image taken from ColorThief to set background color in front end
+        capture_rate: Int
+        growth_rate: String
+        shape: String
+        base_happiness: Int
+        hatch_counter: Int
+        is_default: Boolean # True if it's the default form, False if it's a variant (i.e. alola, galar, mega, etc)
+        variants: [Pokemon]
     }
 
     type Type { # Pokemon type (i.e. Grass, Electric, Water, etc)
@@ -101,9 +106,9 @@ const typeDefs = gql`
         id: Int
         name: String
         type: Type
-        #learn_methods: [MoveLearnMethod] # level, egg, move tutor, tm/hm
-        learn_method: String
-        level_learned_at: Int
+        learn_methods: [MoveLearnMethod] # level, egg, move tutor, tm/hm
+        # learn_method: String
+        # level_learned_at: Int
         power: Int
         accuracy: Int
         pp: Int
@@ -130,8 +135,7 @@ const typeDefs = gql`
     }
 
     type Location {
-        id: Int # for the /location-area/id endpoint
-        # location_area_id: Int # for the /location/id endpoint
+        id: Int
         name: String
         region: Region
         evolution_criteria_name: String

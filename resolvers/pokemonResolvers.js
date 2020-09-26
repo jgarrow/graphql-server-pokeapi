@@ -84,6 +84,9 @@ const resolvers = {
         generation: (parent, args, { dataSources }) => {
             return dataSources.db.getSinglePokemonGeneration(parent);
         },
+        base_experience: (parent, args, { dataSources }) => {
+            return dataSources.db.getSinglePokemonBaseExperience(parent);
+        },
         base_stats: (parent, args, { dataSources }) => {
             return dataSources.db.getSinglePokemonStats(parent);
         },
@@ -93,8 +96,39 @@ const resolvers = {
         gender_rate: (parent, args, { dataSources }) => {
             return dataSources.db.getSinglePokemonGenderRate(parent);
         },
-        types: (parent, args, { dataSources }) => {
-            return { typeId: dataSources.db.getSinglePokemonTypeIds(parent) };
+        color: (parent, args, { dataSources }) => {
+            return dataSources.db.getSinglePokemonColor(parent);
+        },
+        dominant_color: (parent, args, { dataSources }) => {
+            return dataSources.db.getSinglePokemonDominantColor(parent);
+        },
+        capture_rate: (parent, args, { dataSources }) => {
+            return dataSources.db.getSinglePokemonCaptureRate(parent);
+        },
+        growth_rate: (parent, args, { dataSources }) => {
+            return dataSources.db.getSinglePokemonGrowthRate(parent);
+        },
+        shape: (parent, args, { dataSources }) => {
+            return dataSources.db.getSinglePokemonShape(parent);
+        },
+        base_happiness: (parent, args, { dataSources }) => {
+            return dataSources.db.getSinglePokemonBaseHappiness(parent);
+        },
+        hatch_counter: (parent, args, { dataSources }) => {
+            return dataSources.db.getSinglePokemonHatchCounter(parent);
+        },
+        is_default: (parent, args, { dataSources }) => {
+            return dataSources.db.getSinglePokemonIsDefault(parent);
+        },
+        types: async (parent, args, { dataSources }) => {
+            const typeIds = await dataSources.db.getSinglePokemonTypeIds(
+                parent
+            );
+            return typeIds.map((type) => {
+                return {
+                    typeId: type,
+                };
+            });
         },
         egg_groups: (parent, args, { dataSources }) => {
             return dataSources.db.getSinglePokemonEggGroupIds(parent);
@@ -119,10 +153,17 @@ const resolvers = {
         games: (parent, args, { dataSources }) => {
             return dataSources.db.getSinglePokemonGameIds(parent);
         },
-        locations: (parent, args, { dataSources }) => {
-            return {
-                locationId: dataSources.db.getSinglePokemonLocationIds(parent),
-            };
+        locations: async (parent, args, { dataSources }) => {
+            const locationIds = await dataSources.db.getSinglePokemonLocationIds(
+                parent
+            );
+            return locationIds.length
+                ? locationIds.map((location) => {
+                      return {
+                          locationId: location,
+                      };
+                  })
+                : null;
         },
         moves: async (parent, args, { dataSources }) => {
             const moveIds = await dataSources.db.getSinglePokemonMoveIds(
@@ -154,41 +195,50 @@ const resolvers = {
                 parent
             );
 
-            return criteria.map((criteria) => {
-                return {
-                    ...criteria,
-                    ...args,
-                };
-            });
+            return criteria
+                ? criteria.map((criteria) => {
+                      return {
+                          ...criteria,
+                          ...args,
+                      };
+                  })
+                : null;
         },
         pokedex_entries: (parent, args, { dataSources }) => {
             return dataSources.db.getSinglePokemonPokedexEntries(parent);
+        },
+        variants: (parent, args, { dataSources }) => {
+            return dataSources.db.getSinglePokemonVariants(parent);
         },
     },
     Stats: {
         hp: (parent, args, { dataSources }) => {
             const hp = parent.find((stat) => stat.name === 'hp');
-            return hp.base_stat;
+            return parent.length > 0 ? hp.base_stat : null;
         },
         attack: (parent, args, { dataSources }) => {
-            const hp = parent.find((stat) => stat.name === 'attack');
-            return hp.base_stat;
+            const attack = parent.find((stat) => stat.name === 'attack');
+            return parent.length > 0 ? attack.base_stat : null;
         },
         defense: (parent, args, { dataSources }) => {
-            const hp = parent.find((stat) => stat.name === 'defense');
-            return hp.base_stat;
+            const defense = parent.find((stat) => stat.name === 'defense');
+            return parent.length > 0 ? defense.base_stat : null;
         },
         special_attack: (parent, args, { dataSources }) => {
-            const hp = parent.find((stat) => stat.name === 'special-attack');
-            return hp.base_stat;
+            const sp_attack = parent.find(
+                (stat) => stat.name === 'special-attack'
+            );
+            return parent.length > 0 ? sp_attack.base_stat : null;
         },
         special_defense: (parent, args, { dataSources }) => {
-            const hp = parent.find((stat) => stat.name === 'special-defense');
-            return hp.base_stat;
+            const sp_defense = parent.find(
+                (stat) => stat.name === 'special-defense'
+            );
+            return parent.length > 0 ? sp_defense.base_stat : null;
         },
         speed: (parent, args, { dataSources }) => {
-            const hp = parent.find((stat) => stat.name === 'speed');
-            return hp.base_stat;
+            const speed = parent.find((stat) => stat.name === 'speed');
+            return parent.length > 0 ? speed.base_stat : null;
         },
     },
     Type: {
@@ -271,8 +321,15 @@ const resolvers = {
         games: (parent, args, { dataSources }) => {
             return dataSources.db.getRegionGameIds(parent);
         },
-        locations: (parent, args, { dataSources }) => {
-            return dataSources.db.getRegionLocationIds(parent);
+        locations: async (parent, args, { dataSources }) => {
+            const locationIds = await dataSources.db.getRegionLocationIds(
+                parent
+            );
+            return locationIds.map((location) => {
+                return {
+                    locationId: location,
+                };
+            });
         },
     },
     Location: {
@@ -295,8 +352,11 @@ const resolvers = {
         name: (parent, args, { dataSources }) => {
             return dataSources.db.getMoveName(parent.moveId);
         },
-        type: (parent, args, { dataSources }) => {
-            return dataSources.db.getMoveTypeId(parent.moveId);
+        type: async (parent, args, { dataSources }) => {
+            const typeId = await dataSources.db.getMoveTypeId(parent.moveId);
+            return {
+                typeId,
+            };
         },
         power: (parent, args, { dataSources }) => {
             return dataSources.db.getMovePower(parent.moveId);
@@ -328,15 +388,8 @@ const resolvers = {
                 parent.gameName
             );
         },
-        learn_method: (parent, args, { dataSources }) => {
-            return dataSources.db.getSinglePokemonMoveLearnMethod(
-                parent.pokemonId,
-                parent.moveId,
-                parent.gameName
-            );
-        },
-        level_learned_at: (parent, args, { dataSources }) => {
-            return dataSources.db.getSinglePokemonMoveLevelLearnedAt(
+        learn_methods: (parent, args, { dataSources }) => {
+            return dataSources.db.getSinglePokemonLearnMethodIds(
                 parent.pokemonId,
                 parent.moveId,
                 parent.gameName
@@ -344,6 +397,19 @@ const resolvers = {
         },
         original_games: (parent, args, { dataSources }) => {
             return dataSources.db.getMoveGameIds(parent.moveId);
+        },
+    },
+    MoveLearnMethod: {
+        method: (parent, args, { dataSources }) => {
+            return dataSources.db.getSinglePokemonMoveLearnMethodName(
+                parent.move_learn_method_id
+            );
+        },
+        level_learned_at: (parent, args, { dataSources }) => {
+            return parent.level;
+        },
+        games: (parent, args, { dataSources }) => {
+            return parent.id;
         },
     },
     DexEntry: {
@@ -410,3 +476,824 @@ const resolvers = {
 };
 
 module.exports = { resolvers };
+
+// {
+// 	pokemon(id: 280) {
+//     id
+//     name
+//     nat_dex_num
+//     genus
+//     height
+//     weight
+//     is_baby
+//     base_experience
+//     generation
+//     gender_rate
+//     growth_rate
+//     capture_rate
+//     base_happiness
+//     color
+//     dominant_color
+//     shape
+//     hatch_counter
+//     base_stats {
+//         hp
+//         attack
+//         defense
+//         special_attack
+//         special_defense
+//         speed
+//     }
+//     types {
+//         name
+
+//     }
+//     egg_groups {
+//         name
+//     }
+//     abilities {
+//         name
+//         is_hidden
+//         effect
+//         description
+//     }
+//     evolution_trigger
+//     evolution_criteria {
+//         ... on Move {
+//             evolution_criteria_name
+//             name
+//         }
+//         ... on Item {
+//             id
+//             evolution_criteria_name
+//             name
+//             cost
+//             bag_pocket
+//             effect
+//             description
+//         }
+//         ... on Type {
+//             evolution_criteria_name
+//             name
+//         }
+//         ... on Location {
+//             evolution_criteria_name
+//             name
+//             region {
+//                 name
+//             }
+//             games {
+//                 name
+//             }
+//         }
+//         ... on Gender {
+//             evolution_criteria_name
+//             name
+//         }
+//         ... on OtherEvolutionCriteria {
+//             evolution_criteria_name
+//             value
+//         }
+//     }
+//     evolves_to {
+//         id
+//         name
+//         sprites {
+//             front_default
+//         }
+//         evolution_trigger
+//         evolution_criteria {
+//             ... on Move {
+//                 evolution_criteria_name
+//                 name
+//             }
+//             ... on Item {
+//                 evolution_criteria_name
+//                 name
+//             }
+//             ... on Type {
+//                 evolution_criteria_name
+//                 name
+//             }
+//             ... on Location {
+//                 evolution_criteria_name
+//                 name
+//             }
+//             ... on Gender {
+//                 evolution_criteria_name
+//                 name
+//             }
+//             ... on OtherEvolutionCriteria {
+//                 evolution_criteria_name
+//                 value
+//             }
+//         }
+//         evolves_to {
+//             id
+//             name
+//             sprites {
+//                 front_default
+//             }
+//             evolution_trigger
+//             evolution_criteria {
+//                 ... on Move {
+//                 evolution_criteria_name
+//                 name
+//             }
+//             ... on Item {
+//                 evolution_criteria_name
+//                 name
+//             }
+//             ... on Type {
+//                 evolution_criteria_name
+//                 name
+//             }
+//             ... on Location {
+//                 evolution_criteria_name
+//                 name
+//             }
+//             ... on Gender {
+//                 evolution_criteria_name
+//                 name
+//             }
+//             ... on OtherEvolutionCriteria {
+//                 evolution_criteria_name
+//                 value
+//             }
+//             }
+//         }
+//     }
+//     evolves_from {
+//         id
+//         name
+//         sprites {
+//             front_default
+//         }
+//         evolution_trigger
+//         evolution_criteria {
+//             ... on Move {
+//                 evolution_criteria_name
+//                 name
+//             }
+//             ... on Item {
+//                 evolution_criteria_name
+//                 name
+//             }
+//             ... on Type {
+//                 evolution_criteria_name
+//                 name
+//             }
+//             ... on Location {
+//                 evolution_criteria_name
+//                 name
+//             }
+//             ... on Gender {
+//                 evolution_criteria_name
+//                 name
+//             }
+//             ... on OtherEvolutionCriteria {
+//                 evolution_criteria_name
+//                 value
+//             }
+//         }
+//         evolves_from {
+//             id
+//             name
+//             sprites {
+//                 front_default
+//             }
+//             evolution_trigger
+//             evolution_criteria {
+//                 ... on Move {
+//                 evolution_criteria_name
+//                 name
+//             }
+//             ... on Item {
+//                 evolution_criteria_name
+//                 name
+//             }
+//             ... on Type {
+//                 evolution_criteria_name
+//                 name
+//             }
+//             ... on Location {
+//                 evolution_criteria_name
+//                 name
+//             }
+//             ... on Gender {
+//                 evolution_criteria_name
+//                 name
+//             }
+//             ... on OtherEvolutionCriteria {
+//                 evolution_criteria_name
+//                 value
+//             }
+//             }
+//         }
+//     }
+//     locations {
+//         name
+//         games {
+//             name
+//         }
+//         region {
+//             name
+//         }
+//     }
+//     games {
+//         name
+//         generation
+//         regions {
+//             name
+//         }
+//     }
+//     pokedex_entries {
+//         description
+//         game {
+//             name
+//         }
+//     }
+//     sprites {
+//         back_shiny
+//         back_female
+//         back_default
+//         back_shiny_female
+//         front_shiny
+//         front_female
+//         front_default
+//         front_shiny_female
+//     }
+
+//   }
+// }
+
+// yellow: moves(game: "yellow") {
+//     name
+//     power
+//     accuracy
+//     pp
+//     priority
+//     ailment
+//     type {
+//         name
+//     }
+//     damage_class
+//     effect_chance
+//     effect
+//     description
+//     learn_methods {
+//         method
+//         level_learned_at
+//     }
+// }
+// red: moves(game: "red") {
+//     name
+//     power
+//     accuracy
+//     pp
+//     priority
+//     ailment
+//     type {
+//         name
+//     }
+//     damage_class
+//     effect_chance
+//     effect
+//     description
+//     learn_methods {
+//         method
+//         level_learned_at
+//     }
+// }
+// blue: moves(game: "blue") {
+//     name
+//     power
+//     accuracy
+//     pp
+//     priority
+//     ailment
+//     type {
+//         name
+//     }
+//     damage_class
+//     effect_chance
+//     effect
+//     description
+//     learn_methods {
+//         method
+//         level_learned_at
+//     }
+// }
+// gold: moves(game: "gold") {
+//     name
+//     power
+//     accuracy
+//     pp
+//     priority
+//     ailment
+//     type {
+//         name
+//     }
+//     damage_class
+//     effect_chance
+//     effect
+//     description
+//     learn_methods {
+//         method
+//         level_learned_at
+//     }
+// }
+// silver: moves(game: "silver") {
+//     name
+//     power
+//     accuracy
+//     pp
+//     priority
+//     ailment
+//     type {
+//         name
+//     }
+//     damage_class
+//     effect_chance
+//     effect
+//     description
+//     learn_methods {
+//         method
+//         level_learned_at
+//     }
+// }
+// crystal: moves(game: "crystal") {
+//     name
+//     power
+//     accuracy
+//     pp
+//     priority
+//     ailment
+//     type {
+//         name
+//     }
+//     damage_class
+//     effect_chance
+//     effect
+//     description
+//     learn_methods {
+//         method
+//         level_learned_at
+//     }
+// }
+// ruby: moves(game: "ruby") {
+//     name
+//     power
+//     accuracy
+//     pp
+//     priority
+//     ailment
+//     type {
+//         name
+//     }
+//     damage_class
+//     effect_chance
+//     effect
+//     description
+//     learn_methods {
+//         method
+//         level_learned_at
+//     }
+// }
+// sapphire: moves(game: "sapphire") {
+//     name
+//     power
+//     accuracy
+//     pp
+//     priority
+//     ailment
+//     type {
+//         name
+//     }
+//     damage_class
+//     effect_chance
+//     effect
+//     description
+//     learn_methods {
+//         method
+//         level_learned_at
+//     }
+// }
+// emerald: moves(game: "emerald") {
+//     name
+//     power
+//     accuracy
+//     pp
+//     priority
+//     ailment
+//     type {
+//         name
+//     }
+//     damage_class
+//     effect_chance
+//     effect
+//     description
+//     learn_methods {
+//         method
+//         level_learned_at
+//     }
+// }
+// firered: moves(game: "firered") {
+//     name
+//     power
+//     accuracy
+//     pp
+//     priority
+//     ailment
+//     type {
+//         name
+//     }
+//     damage_class
+//     effect_chance
+//     effect
+//     description
+//     learn_methods {
+//         method
+//         level_learned_at
+//     }
+// }
+// leafgreen: moves(game: "leafgreen") {
+//     name
+//     power
+//     accuracy
+//     pp
+//     priority
+//     ailment
+//     type {
+//         name
+//     }
+//     damage_class
+//     effect_chance
+//     effect
+//     description
+//     learn_methods {
+//         method
+//         level_learned_at
+//     }
+// }
+// diamond: moves(game: "diamond") {
+//     name
+//     power
+//     accuracy
+//     pp
+//     priority
+//     ailment
+//     type {
+//         name
+//     }
+//     damage_class
+//     effect_chance
+//     effect
+//     description
+//     learn_methods {
+//         method
+//         level_learned_at
+//     }
+// }
+// pearl: moves(game: "pearl") {
+//     name
+//     power
+//     accuracy
+//     pp
+//     priority
+//     ailment
+//     type {
+//         name
+//     }
+//     damage_class
+//     effect_chance
+//     effect
+//     description
+//     learn_methods {
+//         method
+//         level_learned_at
+//     }
+// }
+// platinum: moves(game: "platinum") {
+//     name
+//     power
+//     accuracy
+//     pp
+//     priority
+//     ailment
+//     type {
+//         name
+//     }
+//     damage_class
+//     effect_chance
+//     effect
+//     description
+//     learn_methods {
+//         method
+//         level_learned_at
+//     }
+// }
+// heartgold: moves(game: "heartgold") {
+//     name
+//     power
+//     accuracy
+//     pp
+//     priority
+//     ailment
+//     type {
+//         name
+//     }
+//     damage_class
+//     effect_chance
+//     effect
+//     description
+//     learn_methods {
+//         method
+//         level_learned_at
+//     }
+// }
+// soulsilver: moves(game: "soulsilver") {
+//     name
+//     power
+//     accuracy
+//     pp
+//     priority
+//     ailment
+//     type {
+//         name
+//     }
+//     damage_class
+//     effect_chance
+//     effect
+//     description
+//     learn_methods {
+//         method
+//         level_learned_at
+//     }
+// }
+// black: moves(game: "black") {
+//     name
+//     power
+//     accuracy
+//     pp
+//     priority
+//     ailment
+//     type {
+//         name
+//     }
+//     damage_class
+//     effect_chance
+//     effect
+//     description
+//     learn_methods {
+//         method
+//         level_learned_at
+//     }
+// }
+// white: moves(game: "white") {
+//     name
+//     power
+//     accuracy
+//     pp
+//     priority
+//     ailment
+//     type {
+//         name
+//     }
+//     damage_class
+//     effect_chance
+//     effect
+//     description
+//     learn_methods {
+//         method
+//         level_learned_at
+//     }
+// }
+// colosseum: moves(game: "colosseum") {
+//     name
+//     power
+//     accuracy
+//     pp
+//     priority
+//     ailment
+//     type {
+//         name
+//     }
+//     damage_class
+//     effect_chance
+//     effect
+//     description
+//     learn_methods {
+//         method
+//         level_learned_at
+//     }
+// }
+// xd: moves(game: "xd") {
+//     name
+//     power
+//     accuracy
+//     pp
+//     priority
+//     ailment
+//     type {
+//         name
+//     }
+//     damage_class
+//     effect_chance
+//     effect
+//     description
+//     learn_methods {
+//         method
+//         level_learned_at
+//     }
+// }
+// black2: moves(game: "black-2") {
+//     name
+//     power
+//     accuracy
+//     pp
+//     priority
+//     ailment
+//     type {
+//         name
+//     }
+//     damage_class
+//     effect_chance
+//     effect
+//     description
+//     learn_methods {
+//         method
+//         level_learned_at
+//     }
+// }
+// white2: moves(game: "white-2") {
+//     name
+//     power
+//     accuracy
+//     pp
+//     priority
+//     ailment
+//     type {
+//         name
+//     }
+//     damage_class
+//     effect_chance
+//     effect
+//     description
+//     learn_methods {
+//         method
+//         level_learned_at
+//     }
+// }
+// x: moves(game: "x") {
+//     name
+//     power
+//     accuracy
+//     pp
+//     priority
+//     ailment
+//     type {
+//         name
+//     }
+//     damage_class
+//     effect_chance
+//     effect
+//     description
+//     learn_methods {
+//         method
+//         level_learned_at
+//     }
+// }
+// y: moves(game: "y") {
+//     name
+//     power
+//     accuracy
+//     pp
+//     priority
+//     ailment
+//     type {
+//         name
+//     }
+//     damage_class
+//     effect_chance
+//     effect
+//     description
+//     learn_methods {
+//         method
+//         level_learned_at
+//     }
+// }
+// omegaRuby: moves(game: "omega-ruby") {
+//     name
+//     power
+//     accuracy
+//     pp
+//     priority
+//     ailment
+//     type {
+//         name
+//     }
+//     damage_class
+//     effect_chance
+//     effect
+//     description
+//     learn_methods {
+//         method
+//         level_learned_at
+//     }
+// }
+// alphaSapphire: moves(game: "alpha-sapphire") {
+//     name
+//     power
+//     accuracy
+//     pp
+//     priority
+//     ailment
+//     type {
+//         name
+//     }
+//     damage_class
+//     effect_chance
+//     effect
+//     description
+//     learn_methods {
+//         method
+//         level_learned_at
+//     }
+// }
+// sun: moves(game: "sun") {
+//     name
+//     power
+//     accuracy
+//     pp
+//     priority
+//     ailment
+//     type {
+//         name
+//     }
+//     damage_class
+//     effect_chance
+//     effect
+//     description
+//     learn_methods {
+//         method
+//         level_learned_at
+//     }
+// }
+// moon: moves(game: "moon") {
+//     name
+//     power
+//     accuracy
+//     pp
+//     priority
+//     ailment
+//     type {
+//         name
+//     }
+//     damage_class
+//     effect_chance
+//     effect
+//     description
+//     learn_methods {
+//         method
+//         level_learned_at
+//     }
+// }
+// ultraSun: moves(game: "ultra-sun") {
+//     name
+//     power
+//     accuracy
+//     pp
+//     priority
+//     ailment
+//     type {
+//         name
+//     }
+//     damage_class
+//     effect_chance
+//     effect
+//     description
+//     learn_methods {
+//         method
+//         level_learned_at
+//     }
+// }
+// ultraMoon: moves(game: "ultra-moon") {
+//     name
+//     power
+//     accuracy
+//     pp
+//     priority
+//     ailment
+//     type {
+//         name
+//     }
+//     damage_class
+//     effect_chance
+//     effect
+//     description
+//     learn_methods {
+//         method
+//         level_learned_at
+//     }
+// }
