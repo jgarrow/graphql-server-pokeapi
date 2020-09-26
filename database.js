@@ -1272,30 +1272,58 @@ class Database extends SQLDataSource {
     }
 
     async getSinglePokemonEvolvesFromPokemonId(pokemonId) {
-        const evolvesFromSpeciesId = await this.knex
+        // check if requested pokemon is a mega evolution
+        const nameRes = await this.knex
             .first()
-            .select('ps.evolves_from_species_id')
-            .from('pokemon_v2_pokemonspecies as ps')
-            .innerJoin(
-                'pokemon_v2_pokemon as p',
-                'p.pokemon_species_id',
-                'ps.id'
-            )
-            .where('p.id', pokemonId)
-            .cache(MINUTE);
-
-        const queryRes = await this.knex
-            .first()
-            .select('p.id')
+            .select('p.name', 'p.pokemon_species_id')
             .from('pokemon_v2_pokemon as p')
-            .where(
-                'p.pokemon_species_id',
-                evolvesFromSpeciesId.evolves_from_species_id
-            )
-            .cache(MINUTE);
+            .where('p.id', pokemonId);
+
+        const isMega = nameRes.name.includes('mega');
+        let evolvesFromId = null;
+
+        if (isMega) {
+            // get all pokemon ids associated with the pokemon species id
+            const multipleFormsRes = await this.knex
+                .select('p.id', 'p.name', 'p.is_default')
+                .from('pokemon_v2_pokemon as p')
+                .where('p.pokemon_species_id', nameRes.pokemon_species_id);
+
+            evolvesFromId = multipleFormsRes.filter(
+                (mon) =>
+                    mon.id !== pokemonId &&
+                    mon.is_default &&
+                    mon.name !== nameRes.name
+            );
+            evolvesFromId = evolvesFromId[0].id;
+        } else {
+            const evolvesFromSpeciesId = await this.knex
+                .first()
+                .select('ps.evolves_from_species_id')
+                .from('pokemon_v2_pokemonspecies as ps')
+                .innerJoin(
+                    'pokemon_v2_pokemon as p',
+                    'p.pokemon_species_id',
+                    'ps.id'
+                )
+                .where('p.id', pokemonId)
+                .cache(MINUTE);
+
+            const queryRes = await this.knex
+                .first()
+                .select('p.id')
+                .from('pokemon_v2_pokemon as p')
+                .where(
+                    'p.pokemon_species_id',
+                    evolvesFromSpeciesId.evolves_from_species_id
+                )
+                .cache(MINUTE);
+
+            evolvesFromId = queryRes ? queryRes.id : null;
+        }
 
         // returns null if the pokemon doesn't evolve from anything
-        return queryRes ? queryRes.id : null;
+        return evolvesFromId ? evolvesFromId : null;
     }
 
     async getSinglePokemonEvolvesToPokemonId(pokemonId) {
@@ -1332,7 +1360,7 @@ class Database extends SQLDataSource {
             .first()
             .select('p.name')
             .from('pokemon_v2_pokemon as p')
-            .where({ id: pokemonId });
+            .where('p.id', pokemonId);
 
         let megas = [];
 
