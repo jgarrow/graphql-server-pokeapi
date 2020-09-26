@@ -714,7 +714,7 @@ class Database extends SQLDataSource {
 
         const gameIds = queryRes.map((gameObj) => gameObj.version_id);
 
-        return gameIds;
+        return gameIds ? gameIds : null;
     }
 
     async getGameName(gameId) {
@@ -756,7 +756,7 @@ class Database extends SQLDataSource {
             // console.log('game name secondary queryRes: ', queryRes)
         }
 
-        return name;
+        return name ? name : null;
     }
 
     async getGameGeneration(gameId) {
@@ -791,7 +791,7 @@ class Database extends SQLDataSource {
 
         const regionIds = queryRes.map((region) => region.region_id);
 
-        return regionIds;
+        return regionIds ? regionIds : null;
     }
 
     // Region methods
@@ -822,7 +822,7 @@ class Database extends SQLDataSource {
 
         const gameIds = queryRes.map((gameObj) => gameObj.id);
 
-        return gameIds;
+        return gameIds ? gameIds : null;
     }
 
     async getRegionLocationIds(regionId) {
@@ -834,7 +834,7 @@ class Database extends SQLDataSource {
 
         const locationIds = queryRes.map((locationObj) => locationObj.id);
 
-        return locationIds;
+        return locationIds ? locationIds : null;
     }
 
     // Location methods
@@ -856,7 +856,9 @@ class Database extends SQLDataSource {
 
         const locationIdsWithoutDuplicates = [...new Set(locationIds)];
 
-        return locationIdsWithoutDuplicates;
+        return locationIdsWithoutDuplicates
+            ? locationIdsWithoutDuplicates
+            : null;
     }
 
     async getLocationName(locationId) {
@@ -919,7 +921,7 @@ class Database extends SQLDataSource {
 
         const pokemonIds = queryRes.map((pokemonObj) => pokemonObj.pokemon_id);
 
-        return pokemonIds;
+        return pokemonIds ? pokemonIds : null;
     }
 
     // Move methods
@@ -940,7 +942,7 @@ class Database extends SQLDataSource {
 
         const moveIdsWithoutDuplicates = [...new Set(moveIds)];
 
-        return moveIdsWithoutDuplicates;
+        return moveIdsWithoutDuplicates ? moveIdsWithoutDuplicates : null;
     }
 
     async getMoveName(moveId) {
@@ -1080,9 +1082,10 @@ class Database extends SQLDataSource {
 
         // if no game parameter is provided, the query returns all of the descriptions
         // return the description from the most recent game, with the white space all normalized with spaces
-        const normalizedWhiteSpace = queryRes.length
-            ? queryRes[queryRes.length - 1].flavor_text.replace(/\s/gm, ' ')
-            : null;
+        const normalizedWhiteSpace =
+            queryRes && queryRes.length
+                ? queryRes[queryRes.length - 1].flavor_text.replace(/\s/gm, ' ')
+                : null;
 
         return normalizedWhiteSpace;
     }
@@ -1190,7 +1193,8 @@ class Database extends SQLDataSource {
             .where('m.id', moveId)
             .cache(MINUTE);
 
-        const gameIds = queryRes.map((gameObj) => gameObj.id);
+        const gameIds = queryRes ? queryRes.map((gameObj) => gameObj.id) : null;
+
         return gameIds;
     }
 
@@ -1450,12 +1454,14 @@ class Database extends SQLDataSource {
 
         // console.log('getSinglePokemonPokedexEntries queryRes: ', queryRes)
 
-        const dexEntries = queryRes.map((entry) => {
-            // make all whitespace consistent
-            entry.flavor_text = entry.flavor_text.replace(/\s/gm, ' ');
+        const dexEntries = queryRes
+            ? queryRes.map((entry) => {
+                  // make all whitespace consistent
+                  entry.flavor_text = entry.flavor_text.replace(/\s/gm, ' ');
 
-            return { description: entry.flavor_text, gameId: entry.id };
-        });
+                  return { description: entry.flavor_text, gameId: entry.id };
+              })
+            : null;
 
         // console.log('getSinglePokemonPokedexEntries dexEntries: ', dexEntries)
 
@@ -1584,9 +1590,10 @@ class Database extends SQLDataSource {
 
         // if no game parameter is provided, the query returns all of the descriptions
         // return the description from the most recent game, with the white space all normalized with spaces
-        const normalizedWhiteSpace = queryRes.length
-            ? queryRes[queryRes.length - 1].flavor_text.replace(/\s/gm, ' ')
-            : null;
+        const normalizedWhiteSpace =
+            queryRes && queryRes.length
+                ? queryRes[queryRes.length - 1].flavor_text.replace(/\s/gm, ' ')
+                : null;
 
         return normalizedWhiteSpace;
     }
@@ -1602,7 +1609,7 @@ class Database extends SQLDataSource {
             .where('i.id', itemId)
             .cache(MINUTE);
 
-        return `${baseFilePath}/${queryRes.name}`;
+        return queryRes ? `${baseFilePath}/${queryRes.name}` : null;
     }
 
     // database doesn't have data for what games an item is in -- just what games an item has a game_index for -- gen 1 and gen 2 don't have those
