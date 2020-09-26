@@ -257,7 +257,7 @@ class Database extends SQLDataSource {
             .where('p.id', pokemonId)
             .cache(MINUTE);
 
-        console.log('shape queryRes: ', queryRes);
+        // console.log('shape queryRes: ', queryRes);
 
         return queryRes ? queryRes.name : null;
     }
@@ -319,6 +319,17 @@ class Database extends SQLDataSource {
             .cache(MINUTE);
 
         return queryRes ? queryRes.gender_rate : null;
+    }
+
+    async getSinglePokemonIsDefault(pokemonId) {
+        const queryRes = await this.knex
+            .first()
+            .select('p.is_default')
+            .from('pokemon_v2_pokemon as p')
+            .where('p.id', pokemonId)
+            .cache(MINUTE);
+
+        return queryRes ? queryRes.is_default : null;
     }
 
     async getSinglePokemonGeneration(pokemonId) {
@@ -1279,7 +1290,7 @@ class Database extends SQLDataSource {
             .from('pokemon_v2_pokemon as p')
             .where('p.id', pokemonId);
 
-        const isMega = nameRes.name.includes('mega');
+        const isMega = nameRes.name.includes('-mega');
         let evolvesFromId = null;
 
         if (isMega) {
@@ -1327,7 +1338,6 @@ class Database extends SQLDataSource {
     }
 
     async getSinglePokemonEvolvesToPokemonId(pokemonId) {
-        console.log('pokemonId: ', pokemonId);
         // get pokemon who evolves from my current pokemonId
         const queryRes = await this.knex
             .select('p.id', 'p.name')
@@ -1350,7 +1360,7 @@ class Database extends SQLDataSource {
 
         // remove any mega evolutions
         const filteredRes = queryRes.filter(
-            (mon) => !mon.name.includes('mega')
+            (mon) => !mon.name.includes('-mega')
         );
 
         const pokemonIds = filteredRes.map((pokemonObj) => pokemonObj.id);
@@ -1365,7 +1375,7 @@ class Database extends SQLDataSource {
         let megas = [];
 
         // if it's not a mega, check if it can mega evolve
-        if (!nameRes.name.includes('mega')) {
+        if (!nameRes.name.includes('-mega')) {
             // get pokemon species id of requested pokeon
             const res = await this.knex
                 .first()
@@ -1381,7 +1391,7 @@ class Database extends SQLDataSource {
 
             // get all of the ids for the megas
             megas = multipleFormsRes.filter(
-                (mon) => mon.id !== pokemonId && mon.name.includes('mega')
+                (mon) => mon.id !== pokemonId && mon.name.includes('-mega')
             );
             megas = megas.map((obj) => obj.id);
         }

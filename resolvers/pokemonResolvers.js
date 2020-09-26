@@ -117,6 +117,9 @@ const resolvers = {
         hatch_counter: (parent, args, { dataSources }) => {
             return dataSources.db.getSinglePokemonHatchCounter(parent);
         },
+        is_default: (parent, args, { dataSources }) => {
+            return dataSources.db.getSinglePokemonIsDefault(parent);
+        },
         types: async (parent, args, { dataSources }) => {
             const typeIds = await dataSources.db.getSinglePokemonTypeIds(
                 parent

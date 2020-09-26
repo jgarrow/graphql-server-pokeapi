@@ -40,6 +40,7 @@ const typeDefs = gql`
         shape: String
         base_happiness: Int
         hatch_counter: Int
+        is_default: Boolean # True if it's the default form, False if it's a variant (i.e. alola, galar, mega, etc)
     }
 
     type Type { # Pokemon type (i.e. Grass, Electric, Water, etc)
