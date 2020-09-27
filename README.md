@@ -10,7 +10,7 @@ I have not deployed this server anywhere because I didn't want to worry about ot
 -   Start the server locally by running `npm run start`.
 -   Optionally, use the `npm run server` script to use the nodemon script and have "hot reloading" while you're working on it so you don't have to kill and restart the server every time you make a change
 -   Navigate to `http://localhost:4000/` for the GraphQL playground to play around with different queries.
--   The full schema of different fields that can be queried can be found in the [`schema.js` file](https://github.com/jgarrow/graphql-server-pokeapi/blob/master/schema/schema.js)
+-   The full schema of different fields that can be queried can be found in the [`schema.js` file](https://github.com/jgarrow/graphql-server-pokeapi/blob/master/schema/schema.js) (see also [A note on the resolvers](#a-note-on-the-resolvers) for some extra info about the `EvolutionCriteria` type)
 
 ## A note on the database
 
