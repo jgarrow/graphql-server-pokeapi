@@ -1442,17 +1442,16 @@ class Database extends SQLDataSource {
         const queryRes = await this.knex
             .select('ft.flavor_text', 'v.id')
             .from('pokemon_v2_pokemonspeciesflavortext as ft')
-            .innerJoin(
-                'pokemon_v2_pokemon as p',
-                'p.pokemon_species_id',
-                'ft.pokemon_species_id'
-            )
+            // .innerJoin(
+            //     'pokemon_v2_pokemon as p',
+            //     'p.pokemon_id',
+            //     'ft.pokemon_id'
+            // )
             .innerJoin('pokemon_v2_version as v', 'v.id', 'ft.version_id')
             .where('ft.language_id', 9)
-            .where('p.id', pokemonId)
+            .where('ft.pokemon_id', pokemonId)
+            // .where('p.id', pokemonId)
             .cache(MINUTE);
-
-        // console.log('getSinglePokemonPokedexEntries queryRes: ', queryRes)
 
         const dexEntries = queryRes
             ? queryRes.map((entry) => {
@@ -1462,8 +1461,6 @@ class Database extends SQLDataSource {
                   return { description: entry.flavor_text, gameId: entry.id };
               })
             : null;
-
-        // console.log('getSinglePokemonPokedexEntries dexEntries: ', dexEntries)
 
         return dexEntries;
     }
