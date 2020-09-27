@@ -20,12 +20,24 @@ With the updates from Let's Go and Sword/Shield, I found that trying to fetch th
 
 To help combat this, I added a new column into the `pokemon_v2_pokemonspeciesflavortext` table called `pokemon_id` which is a foreign key tied to the `id` in the `pokemon_v2_pokemon` table. That way there is a way to see which pokemon specifically the entry is for, rather than just the species id. This SQL query below is what I used to add the new column. Since there are hundreds of pokemon, I gave them all the default form pokemon id (`where p.is_default = 1`) and then manually went through and updated the pokemon ids for the entries for alternate forms. After doing it manually this first time, I plan on then writing a script to do it for me so that the next time I update the database to get the most recent data from PokeAPI, I won't have to do any manual entries.
 
+Create `pokemon_id` column in the `pokemon_v2_pokemonspeciesflavortext` table:
+
 ```sql
-INSERT INTO pokemon_v2_pokemonspeciesflavortext(pokemon_id)
-VALUES (select p.id
-from pokemon_v2_pokemon as p
-join pokemon_v2_pokemonspeciesflavortext as psft on psft.pokemon_species_id = p.pokemon_species_id
-where p.is_default = 1);
+ALTER TABLE pokemon_v2_pokemonspeciesflavortext
+CREATE COLUMN pokemon_id INTEGER REFERENCES pokemon_v2_pokemon(id)
+```
+
+Set the pokemon ids for all rows in `pokemon_v2_pokemonspeciesflavortext` to the default form:
+
+```sql
+UPDATE pokemon_v2_pokemonspeciesflavortext as psft
+SET pokemon_id = (select p.id from pokemon_v2_pokemon as p where p.pokemon_species_id = psft.pokemon_species_id and p.is_default = 1)
+WHERE
+        EXISTS (
+                SELECT *
+                FROM pokemon_v2_pokemon as p
+                WHERE p.pokemon_species_id = psft.pokemon_species_id and p.is_default = 1
+                );
 ```
 
 ## A note on the resolvers
