@@ -4,6 +4,12 @@ This is not an exhaustive GraphQL server, as the database is large and fairly co
 
 I have not deployed this server anywhere because I didn't want to worry about other people finding it and then all of a sudden have all these different people pinging the server. If you'd like to use it, fork or clone this repo and make your own server! This server hasn't been tested extensively because there are so many Pokémon, so if you find an error, feel free to submit a PR or an issue so I can continue improve this repo.
 
+# Table of Contents
+- [To use](#to-use)
+- [A note on the database](#a-note-on-the-database)
+- [A note on the resolvers](#a-note-on-the-resolvers)
+- [Querying the union](#querying-the-union)
+
 ## To use
 
 -   Clone this repo and run `npm install` to install the dependencies.
