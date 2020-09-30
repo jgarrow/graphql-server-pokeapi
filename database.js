@@ -14,15 +14,15 @@ const MINUTE = 60 * 10000;
 // pokemon_v2_pokemonform table -- those with a form_name != ""
 
 class Database extends SQLDataSource {
-    async getAllPokemonIds() {
+    async getAllPokemonIds(limit = -1, filter = true) {
         const queryRes = await this.knex
             .select('id')
             .from('pokemon_v2_pokemon')
+            .limit(limit)
+            .where('is_default', filter)
             .cache(MINUTE);
-        // console.log('queryRes: ', queryRes)
 
         const pokemonIds = queryRes.map((pokemon) => pokemon.id);
-        // console.log('pokemonIds: ', pokemonIds)
 
         return pokemonIds;
     }
@@ -49,7 +49,6 @@ class Database extends SQLDataSource {
     }
 
     async getSinglePokemonName(pokemonId) {
-        // console.log('pokemonId: ', pokemonId)
         const queryRes = await this.knex
             .first()
             .select('p.name')
@@ -57,7 +56,6 @@ class Database extends SQLDataSource {
             .where({ id: pokemonId })
             .cache(MINUTE);
 
-        // console.log('queryRes: ', queryRes)
         return queryRes ? queryRes.name : null;
     }
 
@@ -256,8 +254,6 @@ class Database extends SQLDataSource {
             )
             .where('p.id', pokemonId)
             .cache(MINUTE);
-
-        // console.log('shape queryRes: ', queryRes);
 
         return queryRes ? queryRes.name : null;
     }
@@ -485,8 +481,9 @@ class Database extends SQLDataSource {
             .where('te.target_type_id', typeId)
             .cache(MINUTE);
 
-        const typeIds = queryRes.map((typeObj) => typeObj.damage_type_id);
-
+        const typeIds = queryRes.map((typeObj) => {
+            return { typeId: typeObj.damage_type_id };
+        });
         return typeIds;
     }
 
@@ -498,7 +495,9 @@ class Database extends SQLDataSource {
             .where('te.target_type_id', typeId)
             .cache(MINUTE);
 
-        const typeIds = queryRes.map((typeObj) => typeObj.damage_type_id);
+        const typeIds = queryRes.map((typeObj) => {
+            return { typeId: typeObj.damage_type_id };
+        });
 
         return typeIds;
     }
@@ -511,7 +510,9 @@ class Database extends SQLDataSource {
             .where('te.target_type_id', typeId)
             .cache(MINUTE);
 
-        const typeIds = queryRes.map((typeObj) => typeObj.damage_type_id);
+        const typeIds = queryRes.map((typeObj) => {
+            return { typeId: typeObj.damage_type_id };
+        });
 
         return typeIds;
     }
@@ -524,7 +525,9 @@ class Database extends SQLDataSource {
             .where('te.damage_type_id', typeId)
             .cache(MINUTE);
 
-        const typeIds = queryRes.map((typeObj) => typeObj.target_type_id);
+        const typeIds = queryRes.map((typeObj) => {
+            return { typeId: typeObj.target_type_id };
+        });
 
         return typeIds;
     }
@@ -537,7 +540,9 @@ class Database extends SQLDataSource {
             .where('te.damage_type_id', typeId)
             .cache(MINUTE);
 
-        const typeIds = queryRes.map((typeObj) => typeObj.target_type_id);
+        const typeIds = queryRes.map((typeObj) => {
+            return { typeId: typeObj.target_type_id };
+        });
 
         return typeIds;
     }
@@ -550,7 +555,9 @@ class Database extends SQLDataSource {
             .where('te.damage_type_id', typeId)
             .cache(MINUTE);
 
-        const typeIds = queryRes.map((typeObj) => typeObj.target_type_id);
+        const typeIds = queryRes.map((typeObj) => {
+            return { typeId: typeObj.target_type_id };
+        });
 
         return typeIds;
     }
@@ -718,33 +725,15 @@ class Database extends SQLDataSource {
     }
 
     async getGameName(gameId) {
-        // console.log('gameId in getGameName: ', gameId)
-        // let queryRes = await this.knex
-        //     .first()
-        //     .select('vn.name')
-        //     .from('pokemon_v2_versionname as vn')
-        //     .where('vn.version_id', gameId)
-        //     .where('vn.language_id', 9)
-        //     .cache(MINUTE);
-
         let queryRes = await this.knex
             .first()
             .select('v.name')
             .from('pokemon_v2_version as v')
             .where('v.id', gameId);
 
-        // console.log('getGameName initial queryRes: ', queryRes)
-
         let name = queryRes.name;
 
         if (!queryRes.name) {
-            // console.log('hullo hullo')
-            // queryRes = await this.knex
-            //     .first()
-            //     .select('v.name')
-            //     .from('pokemon_v2_version as v')
-            //     .where('v.id', gameId)
-
             queryRes = await this.knex
                 .first()
                 .select('vn.name')
@@ -752,8 +741,6 @@ class Database extends SQLDataSource {
                 .where('vn.version_id', gameId)
                 .where('vn.language_id', 9)
                 .cache(MINUTE);
-
-            // console.log('game name secondary queryRes: ', queryRes)
         }
 
         return name ? name : null;
@@ -862,7 +849,6 @@ class Database extends SQLDataSource {
     }
 
     async getLocationName(locationId) {
-        // console.log('locationId: ', locationId);
         const queryRes = await this.knex
             .first()
             .select('l.name')
@@ -870,7 +856,6 @@ class Database extends SQLDataSource {
             .where('l.id', locationId)
             .cache(MINUTE);
 
-        // console.log('queryRes: ', queryRes);
         return queryRes ? queryRes.name : null;
     }
 
@@ -1485,7 +1470,6 @@ class Database extends SQLDataSource {
         const name = nameQuery.name;
 
         if (name.includes('alola')) {
-            // console.log('name: ', name);
             const alolanQuery = await this.knex
                 .first()
                 .select('pfs.sprites')
@@ -1496,7 +1480,6 @@ class Database extends SQLDataSource {
 
             front_default_img = alolanQuery.sprites;
             front_default_img = `${baseFilePath}/${pokemonId}-alola.png`;
-            // }
         }
 
         return {

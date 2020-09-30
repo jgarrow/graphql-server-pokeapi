@@ -181,8 +181,7 @@ const typeDefs = gql`
     }
 
     type Query {
-        allPokemonNamesAndIds(start: Int, end: Int): [NameAndId]
-        allPokemon: [Pokemon] # get range of pokemon starting from start variable
+        allPokemon(limit: Int, filter: Boolean): [Pokemon] # get range of pokemon starting from start variable
         allAbilities: [Ability]
         allTypes(start: Int, end: Int): [Type]
         allEggGroups: [EggGroup]
