@@ -1,8 +1,14 @@
-This is a (read-only) GraphQL server made with [Apollo Server](https://www.apollographql.com/docs/apollo-server/) for [PokeApi](https://pokeapi.co/). I originally created a [GraphQL wrapper for the PokeApi REST API](https://github.com/jgarrow/pokeapi-graphql), but the queries were taking longer than I liked. So I decided to just download the sqlite3 database file from the [PokeApi GitHub repo](https://github.com/PokeAPI/pokeapi) and make my own GraphQL server so I could query the tables directly! My query times are now up to 10x faster! :)
+This is a GraphQL server made with [Apollo Server](https://www.apollographql.com/docs/apollo-server/) for [PokeApi](https://pokeapi.co/). I originally created a [GraphQL wrapper for the PokeApi REST API](https://github.com/jgarrow/pokeapi-graphql), but the queries were taking longer than I liked. So I decided to just download the sqlite3 database file from the [PokeApi GitHub repo](https://github.com/PokeAPI/pokeapi) and make my own GraphQL server so I could query the tables directly! My query times are now up to 10x faster! :)
 
 This is not an exhaustive GraphQL server, as the database is large and fairly complex. What has been done is what I felt was the more pertinent and relevant data for a Pokédex application.
 
 I have not deployed this server anywhere because I didn't want to worry about other people finding it and then all of a sudden have all these different people pinging the server. If you'd like to use it, fork or clone this repo and make your own server! This server hasn't been tested extensively because there are so many Pokémon, so if you find an error, feel free to submit a PR or an issue so I can continue improve this repo.
+
+# Table of Contents
+- [To use](#to-use)
+- [A note on the database](#a-note-on-the-database)
+- [A note on the resolvers](#a-note-on-the-resolvers)
+- [Querying the union](#querying-the-union)
 
 ## To use
 
