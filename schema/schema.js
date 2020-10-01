@@ -34,7 +34,7 @@ const typeDefs = gql`
         height: Int # height in decimeters
         weight: Int # weight in hectograms
         color: String
-        dominant_color: String # dominant color of pokemon image taken from ColorThief to set background color in front end
+        dominant_color: Dominant_Color # dominant color of pokemon image taken from ColorThief to set background color in front end
         capture_rate: Int
         growth_rate: String
         shape: String
@@ -42,6 +42,12 @@ const typeDefs = gql`
         hatch_counter: Int
         is_default: Boolean # True if it's the default form, False if it's a variant (i.e. alola, galar, mega, etc)
         variants: [Pokemon]
+    }
+
+    type Dominant_Color {
+        r: Int
+        g: Int
+        b: Int
     }
 
     type Type { # Pokemon type (i.e. Grass, Electric, Water, etc)

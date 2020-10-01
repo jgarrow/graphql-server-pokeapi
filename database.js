@@ -191,7 +191,12 @@ class Database extends SQLDataSource {
                 `./img/official-artwork/${pokemonId}.png`
             );
 
-            const color = `rgb(${rgbValues[0]}, ${rgbValues[1]}, ${rgbValues[2]})`;
+            // const color = `rgb(${rgbValues[0]}, ${rgbValues[1]}, ${rgbValues[2]})`;
+            const color = {
+                r: rgbValues[0],
+                g: rgbValues[1],
+                b: rgbValues[2],
+            };
 
             return color;
         } catch (err) {
