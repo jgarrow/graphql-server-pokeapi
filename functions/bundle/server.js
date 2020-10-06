@@ -5,10 +5,12 @@ const { typeDefs } = require('./schema/schema');
 const { resolvers } = require('./resolvers/pokemonResolvers');
 const Database = require('./database');
 
+console.log('process.env.DB_FILE_PATH: ', process.env.DB_FILE_PATH);
+
 const knexConfig = {
     client: 'sqlite3',
     connection: {
-        filename: process.env.DB_FILE_PATH,
+        filename: `${process.env.DB_FILE_PATH}`,
     },
     useNullAsDefault: true,
 };
