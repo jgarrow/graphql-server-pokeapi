@@ -4,8 +4,12 @@ const ApolloServerLambda = require('apollo-server-lambda').ApolloServer;
 const { typeDefs } = require('./schema/schema');
 const { resolvers } = require('./resolvers/pokemonResolvers');
 const Database = require('./database');
+const { getDataPath } = require('./data/data');
+const path = require('path');
 
+console.log('server path:', path.resolve(__dirname));
 console.log('process.env.DB_FILE_PATH: ', process.env.DB_FILE_PATH);
+getDataPath();
 
 const knexConfig = {
     client: 'sqlite3',
