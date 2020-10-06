@@ -45,6 +45,9 @@ const typeDefs = gql`
     }
 
     type Dominant_Color {
+        light: String
+        dark: String
+        original: String
         r: Int
         g: Int
         b: Int
