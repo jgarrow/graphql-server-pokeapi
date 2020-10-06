@@ -7,7 +7,7 @@
         "test": "echo \"Error: no test specified\" && exit 1",
         "server": "nodemon ./src/index.js",
         "start": "node ./src/index.js",
-        "bundle": "cpx 'src/**/*.js' functions/bundle"
+        "bundle": "cpx 'src/**/*.{js,sqlite3}' functions/bundle"
     },
     "keywords": [],
     "author": "",
