@@ -2,6 +2,7 @@
 
 const { SQLDataSource } = require('datasource-sql');
 const ColorThief = require('colorthief');
+const { lightenDarkenColor } = require('./utils/colors');
 
 const MINUTE = 60 * 10000;
 
@@ -189,14 +190,17 @@ class Database extends SQLDataSource {
                 `./src/img/${pokemonId}.png`
             );
 
-            // const color = `rgb(${rgbValues[0]}, ${rgbValues[1]}, ${rgbValues[2]})`;
             const color = {
                 r: rgbValues[0],
                 g: rgbValues[1],
                 b: rgbValues[2],
             };
 
-            return color;
+            const light = lightenDarkenColor(color, 60);
+            const dark = lightenDarkenColor(color, -60);
+            const original = `rgb(${rgbValues[0]}, ${rgbValues[1]}, ${rgbValues[2]})`;
+
+            return { light, dark, original, ...color };
         } catch (err) {
             console.log('Error getting color: ', err);
             return err;
