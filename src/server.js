@@ -1,3 +1,4 @@
+require('dotenv').config();
 const ApolloServer = require('apollo-server').ApolloServer;
 const ApolloServerLambda = require('apollo-server-lambda').ApolloServer;
 const { typeDefs } = require('./schema/schema');
@@ -7,7 +8,7 @@ const Database = require('./database');
 const knexConfig = {
     client: 'sqlite3',
     connection: {
-        filename: './src/data/db.sqlite3',
+        filename: process.env.DB_FILE_PATH,
     },
     useNullAsDefault: true,
 };
