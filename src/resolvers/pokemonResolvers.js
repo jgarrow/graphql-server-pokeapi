@@ -211,27 +211,35 @@ const resolvers = {
     Stats: {
         hp: (parent, args, { dataSources }) => {
             const hp = parent.find((stat) => stat.name === 'hp');
-            return hp.base_stat;
+            return hp && hp.base_stat ? hp.base_stat : null;
         },
         attack: (parent, args, { dataSources }) => {
-            const hp = parent.find((stat) => stat.name === 'attack');
-            return hp.base_stat;
+            const attack = parent.find((stat) => stat.name === 'attack');
+            return attack && attack.base_stat ? attack.base_stat : null;
         },
         defense: (parent, args, { dataSources }) => {
-            const hp = parent.find((stat) => stat.name === 'defense');
-            return hp.base_stat;
+            const defense = parent.find((stat) => stat.name === 'defense');
+            return defense && defense.base_stat ? defense.base_stat : null;
         },
         special_attack: (parent, args, { dataSources }) => {
-            const hp = parent.find((stat) => stat.name === 'special-attack');
-            return hp.base_stat;
+            const sp_attack = parent.find(
+                (stat) => stat.name === 'special-attack'
+            );
+            return sp_attack && sp_attack.base_stat
+                ? sp_attack.base_stat
+                : null;
         },
         special_defense: (parent, args, { dataSources }) => {
-            const hp = parent.find((stat) => stat.name === 'special-defense');
-            return hp.base_stat;
+            const sp_defense = parent.find(
+                (stat) => stat.name === 'special-defense'
+            );
+            return sp_defense && sp_defense.base_stat
+                ? sp_defense.base_stat
+                : null;
         },
         speed: (parent, args, { dataSources }) => {
-            const hp = parent.find((stat) => stat.name === 'speed');
-            return hp.base_stat;
+            const speed = parent.find((stat) => stat.name === 'speed');
+            return speed && speed.base_stat ? speed.base_stat : null;
         },
     },
     Type: {

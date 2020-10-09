@@ -190,15 +190,19 @@ class Database extends SQLDataSource {
                 `https://raw.githubusercontent.com/jgarrow/graphql-server-pokeapi/master/src/img/${pokemonId}.png`
             );
 
-            const color = {
-                r: rgbValues[0],
-                g: rgbValues[1],
-                b: rgbValues[2],
-            };
+            const color = rgbValues
+                ? {
+                      r: rgbValues[0],
+                      g: rgbValues[1],
+                      b: rgbValues[2],
+                  }
+                : null;
 
-            const light = lightenDarkenColor(color, 60);
-            const dark = lightenDarkenColor(color, -60);
-            const original = `rgb(${rgbValues[0]}, ${rgbValues[1]}, ${rgbValues[2]})`;
+            const light = color ? lightenDarkenColor(color, 60) : null;
+            const dark = color ? lightenDarkenColor(color, -60) : null;
+            const original = rgbValues
+                ? `rgb(${rgbValues[0]}, ${rgbValues[1]}, ${rgbValues[2]})`
+                : null;
 
             return { light, dark, original, ...color };
         } catch (err) {
@@ -1382,7 +1386,10 @@ class Database extends SQLDataSource {
 
         // remove any mega evolutions
         const filteredRes = queryRes.filter(
-            (mon) => !mon.name.includes('-mega')
+            (mon) =>
+                !mon.name.includes('-mega') &&
+                !mon.name.includes('-alola') &&
+                !mon.name.includes('-totem')
         );
 
         const pokemonIds = filteredRes.map((pokemonObj) => pokemonObj.id);

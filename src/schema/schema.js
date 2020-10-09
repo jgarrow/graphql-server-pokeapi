@@ -1,4 +1,4 @@
-const { gql } = require('apollo-server-lambda');
+const { gql } = require('apollo-server');
 
 const typeDefs = gql`
     union EvolutionCriteria =
