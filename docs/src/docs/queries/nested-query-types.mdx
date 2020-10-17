@@ -1,0 +1,251 @@
+---
+title: Nested Query Types
+description: Query schemas for types that are utilized inside of other queries
+---
+
+<!--
+DexEntry
+Dominant_Color
+EvolutionCriteria
+Gender
+MoveLearnMethod
+Stats
+OtherEvolutionCriteria
+ -->
+
+## Fields for the `Pokemon` type
+
+### DexEntry
+
+When querying for a `Pokemon` type, requesting the field `pokedex_entries` returns an array of `DexEntry` objects.
+
+| Field Name  | Arguments | Return type   | Description                                                        |
+| ----------- | --------- | ------------- | ------------------------------------------------------------------ |
+| description | --        | String        | Returns the Pokédex entry for the requested Pokémon                |
+| game        | --        | [Game](#game) | Returns a `Game` type for the game that this Pokédex entry is from |
+
+#### Example
+
+```graphql title=query lineNumbers=true
+{
+    pokemon(id: 4) {
+        name
+        pokedex_entries {
+            description
+        }
+    }
+}
+```
+
+```json title=result lineNumbers=true
+{
+    "data": {
+        "pokemon": {
+            "name": "charmander",
+            "pokedex_entries": [
+                {
+                    "description": "Obviously prefers hot places. When it rains, steam is said to spout from the tip of its tail."
+                }
+            ]
+        }
+    }
+}
+```
+
+### Dominant_Color
+
+When querying for a `Pokemon` type, requesting the field `dominant_color` returns a `Dominant_Color` object.The dominant color is computed using the [ColorThief library](https://lokeshdhakar.com/projects/color-thief/) and the official artwork images of the Pokémon.
+
+| Field Name | Arguments | Return type | Description                                                                                     |
+| ---------- | --------- | ----------- | ----------------------------------------------------------------------------------------------- |
+| original   | --        | String      | Returns a string of the rgb value of the Pokémon's dominant color (i.e. "rgb(232, 208, 217)")   |
+| light      | --        | String      | Returns a string of a lightened hex code version of the `original` color value (i.e. "#ffffff") |
+| dark       | --        | String      | Returns a string of a darkened hex code version of the `original` color value (i.e. "#ac949d")  |
+| r          | --        | Integer     | Returns an integer of the `r` color value of the `original` rgb color                           |
+| g          | --        | Integer     | Returns an integer of the `g` color value of the `original` rgb color                           |
+| b          | --        | Integer     | Returns an integer of the `b` color value of the `original` rgb color                           |
+
+#### Example
+
+```graphql title=query lineNumbers=true
+{
+    pokemon(id: 4) {
+        name
+        dominant_color {
+            original
+            light
+            dark
+            r
+            g
+            b
+        }
+    }
+}
+```
+
+```json title=result lineNumbers=true
+{
+    "data": {
+        "pokemon": {
+            "name": "pyroar",
+            "dominant_color": {
+                "original": "rgb(214, 169, 90)",
+                "light": "#ffe596",
+                "dark": "#9a6d1e",
+                "r": 214,
+                "g": 169,
+                "b": 90
+            }
+        }
+    }
+}
+```
+
+### EvolutionCriteria
+
+When querying for a `Pokemon` type, requesting the field `evolution_criteria` returns an `EvolutionCriteria` object. `EvolutionCriteria` is a [union](https://graphql.org/learn/schema/#union-types) of the following different types:
+
+-   [Move](#move)
+-   [Item](#item)
+-   [Type](#type)
+-   [Location](#location)
+-   [Gender](#gender)
+-   [OtherEvolutionCriteria](#otherevolutioncriteria)
+
+See [Fields for the EvolutionCriteria type](#fields-for-the-evolutioncriteria-type) for more details.
+
+### Stats
+
+When querying for a `Pokemon` type, requesting the field `base_stats` returns a `Stats` object.
+
+| Field Name      | Arguments | Return type | Description                                          |
+| --------------- | --------- | ----------- | ---------------------------------------------------- |
+| hp              | --        | Integer     | Returns the base hp stat of the Pokémon              |
+| attack          | --        | Integer     | Returns the base attack stat of the Pokémon          |
+| defense         | --        | Integer     | Returns the base defense stat of the Pokémon         |
+| special_attack  | --        | Integer     | Returns the base special attack stat of the Pokémon  |
+| special_defense | --        | Integer     | Returns the base special defense stat of the Pokémon |
+| speed           | --        | Integer     | Returns the base speed stat of the Pokémon           |
+
+#### Example
+
+```graphql title=query lineNumbers=true
+{
+    pokemon(id: 4) {
+        name
+        base_stats {
+            hp
+            attack
+            defense
+            special_attack
+            special_defense
+            speed
+        }
+    }
+}
+```
+
+```json title=result lineNumbers=true
+{
+    "data": {
+        "pokemon": {
+            "name": "dragonair",
+            "base_stats": {
+                "hp": 61,
+                "attack": 84,
+                "defense": 65,
+                "special_attack": 70,
+                "special_defense": 70,
+                "speed": 70
+            }
+        }
+    }
+}
+```
+
+## Fields for the `EvolutionCriteria` type
+
+`EvolutionCriteria` is a [union](https://graphql.org/learn/schema/#union-types) of the following different types:
+
+-   [Move](#move)
+-   [Item](#item)
+-   [Type](#type)
+-   [Location](#location)
+-   [Gender](#gender)
+-   [OtherEvolutionCriteria](#otherevolutioncriteria)
+
+Each of these types has a field `evolution_criteria_name` that only has meaning for `EvolutionCriteria` since the information is pertinent only to the specific Pokémon that was requested. `Gender` and `OtherEvolutionCriteria` are types that are only used in an `EvolutionCriteria` query. The rest can also be retrieved with a base query and have been excluded here.
+
+### Gender
+
+| Field Name              | Arguments | Return type | Description                                                                           |
+| ----------------------- | --------- | ----------- | ------------------------------------------------------------------------------------- |
+| id                      | --        | String      | Returns the id of the gender                                                          |
+| name                    | --        | String      | Returns the name of the gender                                                        |
+| evolution_criteria_name | --        | String      | Returns the name of the evolution criteria that must be met for the Pokémon to evolve |
+
+### OtherEvolutionCriteria
+
+| Field Name              | Arguments | Return type | Description                                                                                                                                                                          |
+| ----------------------- | --------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| value                   | --        | String      | Returns the evolution criteria value (i.e. "night" if it must be nighttime for the Pokémon to evolve)                                                                                |
+| evolution_criteria_name | --        | String      | Returns the name of the evolution criteria that must be met for the Pokémon to evolve (i.e. "time_of_day" if there is a certain time of day that the Pokémon needs to evolve during) |
+
+### Example
+
+The structure for the `EvolutionCriteria` query is a bit different since it is a union. We used a union here because depending on the Pokémon, their criteria for evolving are very different. For example, with the Eevee line, Vaporeon needs an item, Sylveon needs to know a Fairy type move, and Glaceon needs to be at a location with an Icy Rock. To handle all of these differences, we used a union to take advantage of the different types we had already created.
+
+```graphql title=query lineNumbers=true
+{
+    pokemon(id: 4) {
+        name
+        evolution_criteria {
+            ... on Move {
+                evolution_criteria_name
+                name
+            }
+            ... on Item {
+                id
+                evolution_criteria_name
+                name
+            }
+            ... on Type {
+                evolution_criteria_name
+                name
+            }
+            ... on Location {
+                evolution_criteria_name
+                name
+            }
+            ... on Gender {
+                evolution_criteria_name
+                name
+            }
+            ... on OtherEvolutionCriteria {
+                evolution_criteria_name
+                value
+            }
+        }
+    }
+}
+```
+
+```json title=result lineNumbers=true
+{
+    "data": {
+        "pokemon": {
+            "name": "sylveon",
+            "evolution_criteria": [
+                {
+                    "evolution_criteria_name": "min_affection",
+                    "value": "2"
+                },
+                {
+                    "evolution_criteria_name": "known_move_type",
+                    "name": "Fairy"
+                }
+            ]
+        }
+    }
+}
+```

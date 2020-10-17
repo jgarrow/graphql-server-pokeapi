@@ -1,0 +1,75 @@
+---
+title: Updating the Database
+description: How to clone and update the database for your own server
+disableTableOfContents: true
+---
+
+This server uses a SQLite3 database created from the [PokéAPI GitHub repo](https://github.com/PokeAPI/pokeapi). If you would like to clone your own database to host your own server, here are some steps:
+
+1. Clone the PokéAPI repo to your computer and open it up in your code editor
+2. \*\*Skip this step if your `pip` and `python` commands are already running on `pip3` and `python3` respectively. If not, you might have to update the scripts -- navigate to `Makefile` at the root of the project. Here, we're going to update all of the script commands to use `pip3` instead of `pip` so that we can use Python3. The updated file should look like this:
+
+```makefile lineNumbers=true
+.PHONY: help
+
+help:
+	@grep -E '^[a-zA-Z_-]+:.*?# .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?# "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+
+
+install:  # Install base requirements to run project
+	pip3 install -r requirements.txt
+
+dev-install:  # Install developer requirements + base requirements
+	pip3 install -r test-requirements.txt
+
+setup:  # Set up the project database
+	python3 manage.py migrate --settings=config.local
+
+wipe_db:  # Delete's the project database
+	rm -rf db.sqlite3
+
+serve:  # Run the project locally
+	python3 manage.py runserver --settings=config.local
+
+test:  # Run tests
+	python3 manage.py test --settings=config.local
+
+clean:  # Remove any pyc files
+	find . -type f -name '*.pyc' -delete
+
+migrate:  # run any outstanding migrations
+	python3 manage.py migrate --settings=config.local
+
+shell:  # Load a shell
+	python3 manage.py shell --settings=config.local
+
+format:  # Format the source code
+	black .
+
+format-check:  # Check the source code has been formatted
+	black . --check
+
+```
+
+3. Now we can install the requirements
+
+```bash
+# this will install all of the required packages and libraries for using PokéAPI
+make install
+```
+
+4. Start up the Django shell
+
+```bash
+# Update the `python` script to use `python3` if necessary
+python manage.py shell --settings=config.local
+```
+
+5. Run the build script
+
+```bash
+from data.v2.build import build_all
+build_all()
+```
+
+6. The database will be found in the root of the project as `db.sqlite3`. You can now move this database file to your GraphQL Pokédex Server repo!

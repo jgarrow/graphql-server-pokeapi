@@ -1,0 +1,34 @@
+---
+title: 'Getting started'
+description: Learn how to get started with your own GraphQL Pokédex server.
+---
+
+Let's start by cloning the GitHub repo and downloading it to your local machine.
+
+1. Navigate to [https://github.com/jgarrow/graphql-server-pokeapi](https://github.com/jgarrow/graphql-server-pokeapi). Click on the green `Code` button in the upper righthand corner and copy the HTTPS url to your clipboard.
+
+2. Open your terminal and download the repo to your computer, pasting in that url from GitHub after `clone`:
+
+```bash
+git clone https://github.com/jgarrow/graphql-server-pokeapi
+```
+
+3. Install the dependencies:
+
+```bash
+npm install
+```
+
+4. Spin up your development server!
+
+```bash
+npm run start
+```
+
+\*\*`nodemon` has been installed for hot reloading whenever changes are made and saved. This way, you don't have to kill and restart the server every time you save changes. To use this feature, use the following start command instead:
+
+```bash
+npm run server
+```
+
+5. Navigate to [http://localhost:4000/](http://localhost:4000/) and start querying!

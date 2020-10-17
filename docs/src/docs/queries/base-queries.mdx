@@ -1,0 +1,400 @@
+---
+title: Base Queries
+description: An overview of the base queries available for the GraphQL Pokédex server.
+---
+
+For the base queries, there are options to query for all of the entries for certain types or to query for a single entry.
+
+## Querying all entries
+
+Anything that can be queried for a single type (i.e. [Ability](#ability), [Pokemon](#pokemon), etc) can be queried for the "all" base queries as well.
+
+| Field Name   | Arguments                       | Description                                                                                                                                                                                                      |
+| ------------ | ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| allAbilities |                                 | Returns an array of `Ability` objects                                                                                                                                                                            |
+| allEggGroups |                                 | Returns an array of `Egg Group` objects                                                                                                                                                                          |
+| allGames     |                                 | Returns an array of `Game` objects                                                                                                                                                                               |
+| allItems     |                                 | Returns an array of `Item` objects                                                                                                                                                                               |
+| allLocations |                                 | Returns an array of `Location` objects                                                                                                                                                                           |
+| allMoves     |                                 | Returns an array of `Move` objects                                                                                                                                                                               |
+| allPokemon   | \*limit: Int, \*filter: Boolean | Returns an array of `Pokemon` objects; `limit` caps the number of `Pokemon` that are returned; `filter` determines if "default" forms are returned or if "alternate" forms are returned (initialized to `false`) |
+| allRegions   |                                 | Returns an array of `Region` objects                                                                                                                                                                             |
+| allTypes     |                                 | Returns an array of `Type` objects                                                                                                                                                                               |
+
+\*Optional query arguments
+
+### Example
+
+```graphql title=query lineNumbers=true
+{
+    allPokemon(limit: 3) {
+        name
+    }
+}
+```
+
+```json title=result lineNumbers=true
+{
+    "data": {
+        "allPokemon": [
+            {
+                "name": "bulbasaur"
+            },
+            {
+                "name": "ivysaur"
+            },
+            {
+                "name": "venusaur"
+            }
+        ]
+    }
+}
+```
+
+## Querying individual entries
+
+Aside from being able to request a list of all of the entries of a particular type, there are also base queries to request individual entries based on their id.
+
+| Field Name            | Arguments | Description                          |
+| --------------------- | --------- | ------------------------------------ |
+| [ability](#ability)   | id: Int   | Returns an object of type `Ability`  |
+| [eggGroup](#egggroup) | id: Int   | Returns an object of type `EggGroup` |
+| [game](#game)         | id: Int   | Returns an object of type `Game`     |
+| [item](#item)         | id: Int   | Returns an object of type `Item`     |
+| [location](#location) | id: Int   | Returns an object of type `Location` |
+| [move](#move)         | id: Int   | Returns an object of type `Move`     |
+| [pokemon](#pokemon)   | id: Int   | Returns an object of type `Pokemon`  |
+| [region](#region)     | id: Int   | Returns an object of type `Region`   |
+| [type](#type)         | id: Int   | Returns an object of type `Type`     |
+
+### Ability
+
+Fields that can be queried for `Ability`:
+
+| Field Name  | Arguments | Return type         | Description                                                                         |
+| ----------- | --------- | ------------------- | ----------------------------------------------------------------------------------- |
+| id          | --        | Integer             | Returns the id of the ability                                                       |
+| name        | --        | String              | Returns the name of the ability                                                     |
+| is_hidden   | --        | Boolean             | Returns true if the ability is a "hidden" ability                                   |
+| effect      | --        | String              | Returns a description of the effects of the ability                                 |
+| description | --        | String              | Returns a general description of the ability                                        |
+| pokemon     | --        | [Pokemon](#pokemon) | Returns an array of `Pokemon` objects of all the Pokémon that can have this ability |
+
+#### Example
+
+```graphql title=query lineNumbers=true
+{
+    ability(id: 1) {
+        name
+    }
+}
+```
+
+```json title=result lineNumbers=true
+{
+    "data": {
+        "ability": {
+            "name": "Stench"
+        }
+    }
+}
+```
+
+### EggGroup
+
+Fields that can be queried for `EggGroup`:
+
+| Field Name | Arguments | Return type         | Description                                                      |
+| ---------- | --------- | ------------------- | ---------------------------------------------------------------- |
+| id         | --        | Integer             | Returns the id of the egg group                                  |
+| name       | --        | String              | Returns the name of the egg group                                |
+| pokemon    | --        | [Pokemon](#pokemon) | Returns an array of `Pokemon` objects that are of this egg group |
+
+#### Example
+
+```graphql title=query lineNumbers=true
+{
+    eggGroup(id: 1) {
+        name
+    }
+}
+```
+
+```json title=result lineNumbers=true
+{
+    "data": {
+        "eggGroup": {
+            "name": "Monster"
+        }
+    }
+}
+```
+
+### Game
+
+Fields that can be queried for `Game`:
+
+| Field Name | Arguments | Return type       | Description                                                      |
+| ---------- | --------- | ----------------- | ---------------------------------------------------------------- |
+| id         | --        | Integer           | Returns the id of the egg group                                  |
+| name       | --        | String            | Returns the name of the egg group                                |
+| generation | --        | String            | Returns the generation of this game (i.e. "Generation I")        |
+| regions    | --        | [Region](#region) | Returns an array of `Region` objects that are found in this game |
+
+#### Example
+
+```graphql title=query lineNumbers=true
+{
+    game(id: 1) {
+        name
+    }
+}
+```
+
+```json title=result lineNumbers=true
+{
+    "data": {
+        "game": {
+            "name": "red"
+        }
+    }
+}
+```
+
+### Item
+
+Fields that can be queried for `Item`:
+
+| Field Name              | Arguments | Return type | Description                                                                                                                              |
+| ----------------------- | --------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| id                      | --        | Integer     | Returns the id of the item                                                                                                               |
+| name                    | --        | String      | Returns the name of the item                                                                                                             |
+| effect                  | --        | String      | Returns a description of the effect of the item                                                                                          |
+| description             | --        | String      | Returns a description of what the item is                                                                                                |
+| cost                    | --        | Integer     | Returns the cost of the item in Poké Dollars                                                                                             |
+| bag_pocket              | --        | String      | Returns the name of the bag pocket that the item gets put in                                                                             |
+| sprite                  | --        | String      | Returns a url of the sprite image                                                                                                        |
+| evolution_criteria_name | --        | String      | Use in an `evolution_criteria` query: returns the name of the evolution criteria that must have been met for the Pokémon to have evolved |
+
+#### Example
+
+```graphql title=query lineNumbers=true
+{
+    item(id: 11) {
+        name
+    }
+}
+```
+
+```json title=result lineNumbers=true
+{
+    "data": {
+        "item": {
+            "name": "Luxury Ball"
+        }
+    }
+}
+```
+
+### Location
+
+Fields that can be queried for `Location`:
+
+| Field Name              | Arguments | Return type         | Description                                                                                                                              |
+| ----------------------- | --------- | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| id                      | --        | Integer             | Returns the id of the location                                                                                                           |
+| name                    | --        | String              | Returns the name of the location                                                                                                         |
+| region                  | --        | [Region](#region)   | Returns a `Region` object for the region this location is found in                                                                       |
+| games                   | --        | [Game](#game)       | Returns an array of `Game` objects for the games this location is found in                                                               |
+| pokemon                 | --        | [Pokemon](#pokemon) | Returns an array of `Pokemon` objects that are found at this location                                                                    |
+| evolution_criteria_name | --        | String              | Use in an `evolution_criteria` query: returns the name of the evolution criteria that must have been met for the Pokémon to have evolved |
+
+#### Example
+
+```graphql title=query lineNumbers=true
+{
+    location(id: 48) {
+        name
+    }
+}
+```
+
+```json title=result lineNumbers=true
+{
+    "data": {
+        "location": {
+            "name": "sinnoh-route-217"
+        }
+    }
+}
+```
+
+### Move
+
+Fields that can be queried for `Move`:
+
+| Field Name              | Arguments | Return type                         | Description                                                                                                                                                                        |
+| ----------------------- | --------- | ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| id                      | --        | Integer                             | Returns the id of the move                                                                                                                                                         |
+| name                    | --        | String                              | Returns the name of the move                                                                                                                                                       |
+| power                   | --        | Integer                             | Returns the base power of the move (returns 0 if the move has no base power)                                                                                                       |
+| accuracy                | --        | Integer                             | Returns the percent value of how likely this move is to be successful                                                                                                              |
+| pp                      | --        | Integer                             | Returns the power points of this move (number of times this move can be used)                                                                                                      |
+| priority                | --        | Integer                             | Returns a value between -8 and 8. Sets the order in which moves are executed during battle. See [Bulbapedia](https://bulbapedia.bulbagarden.net/wiki/Priority) for greater details |
+| effect_chance           | --        | Integer                             | Returns the percent value of how likely it is this moves effect will take effect                                                                                                   |
+| effect                  | --        | String                              | Returns a description of the effect that the move can inflict                                                                                                                      |
+| ailment                 | --        | String                              | Returns the name of the ailment the move can inflict                                                                                                                               |
+| description             | --        | String                              | Returns a description of what the move does                                                                                                                                        |
+| damage_class            | --        | String                              | Returns the name of what kind of move it is (i.e. status, physical, special)                                                                                                       |
+| type                    | --        | [Type](#type)                       | Returns a `Type` object of the move                                                                                                                                                |
+| original_games          | --        | [Game](#game)                       | Returns an array of `Game` objects that this move originally debuted in                                                                                                            |
+| learn_methods           | --        | [MoveLearnMethod](#MoveLearnMethod) | Use in a `moves` query on a `Pokemon` type: returns an array of `MoveLearnMethod` types for how a Pokémon learns this move                                                         |
+| evolution_criteria_name | --        | String                              | Use in an `evolution_criteria` query on a `Pokemon` type: returns the name of the evolution criteria that must have been met for the Pokémon to have evolved                       |
+
+#### Example
+
+```graphql title=query lineNumbers=true
+{
+    move(id: 5) {
+        name
+    }
+}
+```
+
+```json title=result lineNumbers=true
+{
+    "data": {
+        "move": {
+            "name": "Mega Punch"
+        }
+    }
+}
+```
+
+### Pokemon
+
+Below are the different fields that can be queried for the `Pokemon` type:
+
+| Field Name         | Arguments      | Return type                             | Description                                                                                                                                                              |
+| ------------------ | -------------- | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| id                 | --             | Integer                                 | Returns the id of the Pokémon                                                                                                                                            |
+| name               | --             | String                                  | Returns the name of the Pokémon                                                                                                                                          |
+| genus              | --             | String                                  | Returns the genus of the Pokémon (i.e. "Mouse Pokémon")                                                                                                                  |
+| weight             | --             | Integer                                 | Returns the weight of the Pokémon in hectograms                                                                                                                          |
+| height             | --             | Integer                                 | Returns the height of the Pokémon in decimeters                                                                                                                          |
+| nat_dex_num        | --             | Integer                                 | Returns the national Pokédex number of the Pokémon                                                                                                                       |
+| gender_rate        | --             | Float                                   | Returns the percent chance of this Pokémon being female (or -1 for genderless)                                                                                           |
+| generation         | --             | String                                  | Returns the generation this Pokémon debuted in (i.e. "Generation I")                                                                                                     |
+| base_experience    | --             | Integer                                 | Returns the base experience gained for defeating this Pokémon                                                                                                            |
+| base_happiness     | --             | Integer                                 | Returns the happiness when caught by a normal Pokéball (up to 255). The higher the number, the happier the Pokémon                                                       |
+| capture_rate       | --             | Integer                                 | Returns the base capture rate (up to 255). The higher the number, the easier the catch                                                                                   |
+| growth_rate        | --             | Integer                                 | Returns the rate at which this Pokémon species gains levels.                                                                                                             |
+| is_default         | --             | Boolean                                 | Returns true if this Pokémon is the default form. Returns false if it's a variant (i.e. alola, mega evolution, alternate form)                                           |
+| hatch_counter      | --             | Integer                                 | Returns the initial hatch counter: one must walk 255 × (hatch_counter + 1) steps before this Pokémon's egg hatches, unless utilizing bonuses like the Flame Body ability |
+| shape              | --             | String                                  | Returns the shape of this Pokémon (i.e. upright, quadruped)                                                                                                              |
+| is_baby            | --             | Boolean                                 | Returns true if this Pokémon is a baby                                                                                                                                   |
+| color              | --             | String                                  | Returns the name of the general color of this Pokémon                                                                                                                    |
+| evolution_trigger  | --             | String                                  | Returns what triggered this Pokémon to evolve from its previous evolution stage; returns `null` if this Pokémon didn't evolve from anything                              |
+| pokedex_entries    | --             | [DexEntry](#dexentry)                   | Returns an array of `DexEntry` objects                                                                                                                                   |
+| types              | --             | [Type](#type)                           | Returns an array of `Type` objects                                                                                                                                       |
+| variants           | --             | [Pokemon](#pokemon)                     | Returns an array of `Pokemon` objects for all of the Pokémon that are variants of the initially requested Pokémon                                                        |
+| dominant_color     | --             | [Dominant_Color](#dominant_color)       | Returns a `DominantColor` object                                                                                                                                         |
+| egg_groups         | --             | [EggGroup](#egggroup)                   | Returns an array of `EggGroup` objects for all of the egg groups that this Pokémon belongs to                                                                            |
+| locations          | --             | [Location](#location)                   | Returns an array of `Location` objects for all of the different locations that this Pokémon can be found at                                                              |
+| games              | --             | [Game](#game)                           | Returns an array of `Game` objects for all of the different games that this Pokémon can be found in                                                                      |
+| evolves_to         | --             | [Pokemon](#pokemon)                     | Returns an array of `Pokemon` objects for the Pokémon that this Pokémon can evolve into                                                                                  |
+| evolves_from       | --             | [Pokemon](#pokemon)                     | Returns a`Pokemon` object for the Pokémon that this Pokémon evolved from                                                                                                 |
+| evolution_criteria | --             | [EvolutionCriteria](#evolutioncriteria) | Returns an array of `EvolutionCriteria` objects for the criteria that must have been met for this Pokémon to have evolved                                                |
+| base_stats         | --             | [Stats](#stats)                         | Returns a `Stat` object for this Pokémon; returns `null` if database is incomplete                                                                                       |
+| moves              | \*game: String | [Move](#move)                           | Returns an array of `Move` objects that this Pokémon can learn; can optionally request the moves by which game they can be learned in                                    |
+| abilities          | \*game: String | [Ability](#ability)                     | Returns an array of `Ability` objects that this Pokémon can have; can optionally request the abilities by which game the Pokémon can have them                           |
+
+\*Optional query arguments
+
+#### Example
+
+```graphql title=query lineNumbers=true
+{
+    pokemon(id: 133) {
+        name
+    }
+}
+```
+
+```json title=result lineNumbers=true
+{
+    "data": {
+        "pokemon": {
+            "name": "eevee"
+        }
+    }
+}
+```
+
+### Region
+
+Fields that can be queried for `Region`:
+
+| Field Name | Arguments | Return type           | Description                                                          |
+| ---------- | --------- | --------------------- | -------------------------------------------------------------------- |
+| id         | --        | Integer               | Returns the id of the region                                         |
+| name       | --        | String                | Returns the name of the region                                       |
+| games      | --        | [Game](#game)         | Returns an array of `Game` objects that this region is found in      |
+| locations  | --        | [Location](#location) | Returns an array of `Location` objects that are found in this region |
+
+#### Example
+
+```graphql title=query lineNumbers=true
+{
+    region(id: 4) {
+        name
+    }
+}
+```
+
+```json title=result lineNumbers=true
+{
+    "data": {
+        "region": {
+            "name": "Sinnoh"
+        }
+    }
+}
+```
+
+### Type
+
+Fields that can be queried for `Type`:
+
+| Field Name              | Arguments | Return type         | Description                                                                                                                              |
+| ----------------------- | --------- | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| id                      | --        | Integer             | Returns the id of the type                                                                                                               |
+| name                    | --        | String              | Returns the name of the type (i.e. Grass, Dark, Water)                                                                                   |
+| double_damage_from      | --        | [Type](#type)       | Returns an array of `Type` objects that this type takes 2x damage from                                                                   |
+| double_damage_to        | --        | [Type](#type)       | Returns an array of `Type` objects that this type gives 2x damage to                                                                     |
+| half_damage_from        | --        | [Type](#type)       | Returns an array of `Type` objects that this type takes 0.5x damage from                                                                 |
+| half_damage_to          | --        | [Type](#type)       | Returns an array of `Type` objects that this type gives 0.5x damage to                                                                   |
+| no_damage_from          | --        | [Type](#type)       | Returns an array of `Type` objects that this type takes no damage from                                                                   |
+| no_damage_to            | --        | [Type](#type)       | Returns an array of `Type` objects that this type gives no damage to                                                                     |
+| pokemon                 | --        | [Pokemon](#pokemon) | Returns an array of `Pokemon` objects that are of this type                                                                              |
+| evolution_criteria_name | --        | String              | Use in an `evolution_criteria` query: returns the name of the evolution criteria that must have been met for the Pokémon to have evolved |
+
+#### Example
+
+```graphql title=query lineNumbers=true
+{
+    type(id: 17) {
+        name
+    }
+}
+```
+
+```json title=result lineNumbers=true
+{
+    "data": {
+        "type": {
+            "name": "Dark"
+        }
+    }
+}
+```

@@ -1,0 +1,22 @@
+# Sidebar navigation
+
+- label: 'Introduction'
+  link: '/'
+- label: 'Getting started'
+  link: '/getting-started'
+- label: Queries
+  items:
+      - label: 'Base queries'
+        link: '/queries/base-queries'
+      - label: 'Nested query types'
+        link: '/queries/nested-query-types'
+- label: Database
+  items:
+      - label: Updating the database
+        link: /updating-the-database
+      - label: Manual changes
+        link: /manual-changes
+- label: Community
+  items:
+      - label: 'Github'
+        link: https://github.com/jgarrow/graphql-server-pokeapi

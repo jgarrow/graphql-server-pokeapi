@@ -1,0 +1,34 @@
+---
+title: Manual Database Changes
+description: To fix an issue in the original database, we need to update our own SQLite3 database ourselves
+---
+
+[PokéAPI](https://github.com/PokeAPI/pokeapi) typically relies on [Veekun](https://github.com/veekun/pokedex) for the data, but since no data for the Let's Go or Sword/Shield games has been added, PokéAPI has begun to gradually add the data from those games themselves. As a result, the data for those games in this database are still partial and incomplete.
+
+With the updates from Let's Go and Sword/Shield, I found that trying to fetch the different Pokédex entry descriptions, or "flavor text" were missing some important information for tying the entry to its associated Pokémon. Instead, the entries are tied to a Pokémon _species_. The issue arises for Pokémon species who have multiple different forms (i.e. mega evolutions, Alolan forms, etc). While they all have their own unique Pokémon ids, they all share the same Pokémon species id. Hence when trying to retrieve the Pokédex entries for, say, Alolan Raichu, you will get back all of the entries for both Kantonian Raichu _and_ Alolan Raichu, with no way to differentiate which entry is for which form.
+
+To help combat this, I added a new column into the `pokemon_v2_pokemonspeciesflavortext` table called `pokemon_id`, which is a foreign key tied to the `id` in the `pokemon_v2_pokemon` table. That way there is a way to see which Pokémon specifically the entry is for, rather than just the species id. This SQL query below is what I used to add the new column. Since there are hundreds of Pokémon, I gave them all the default form Pokémon id (`where p.is_default = 1`) and then manually went through and updated the Pokémon ids for the entries for alternate forms. After doing it manually this first time, I plan on then writing a script to do it for me so that the next time I update the database to get the most recent data from PokéAPI, I won't have to do any manual entries.
+
+1. Create a `pokemon_id` column in the `pokemon_v2_pokemonspeciesflavortext` table:
+
+```sql lineNumbers=true
+ALTER TABLE pokemon_v2_pokemonspeciesflavortext
+CREATE COLUMN pokemon_id INTEGER REFERENCES pokemon_v2_pokemon(id)
+Set the pokemon ids for all rows in pokemon_v2_pokemonspeciesflavortext to the default form:
+
+UPDATE pokemon_v2_pokemonspeciesflavortext as psft
+SET pokemon_id = (select p.id from pokemon_v2_pokemon as p where p.pokemon_species_id = psft.pokemon_species_id and p.is_default = 1)
+WHERE
+        EXISTS (
+                SELECT *
+                FROM pokemon_v2_pokemon as p
+                WHERE p.pokemon_species_id = psft.pokemon_species_id and p.is_default = 1
+                );
+```
+
+2. Manually update the `pokemon_id` entries for the entries that belong to an alternate form instead of the default form. You can use this query to grab all of the English "flavor texts" based on the `pokemon_species_id`. Then you can manually update the `pokemon_id` entries in the necessary rows.
+
+```sql lineNumbers=true
+SELECT * FROM pokemon_v2_pokemonspeciesflavortext as ft
+WHERE ft.pokemon_species_id = 6 and language_id = 9
+```
