@@ -7,7 +7,7 @@
 </h2>
 
 <p align="center">
-  A GraphQL Node server for Pokémon data, using the PokéAPI SQLite3 database. Check out the docs at <a href="https://dex-docs.netlify.app/">https://dex-docs.netlify.app/</a>
+  A GraphQL Node server for Pokémon data, using the <a href="https://github.com/PokeAPI/pokeapi">PokéAPI</a> SQLite3 database. Check out the docs at <a href="https://dex-docs.netlify.app/">https://dex-docs.netlify.app/</a>
 </p>
 
 <p align="center">
