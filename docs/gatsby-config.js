@@ -6,7 +6,7 @@ module.exports = {
         siteDescription: `Documentation for the GraphQL Pokédex Server using PokéAPI's SQLite3 database`,
         siteUrl: `https://dex-docs.netlify.app`,
         siteAuthor: `Janessa Garrow`,
-        siteImage: `/banner.png`,
+        siteImage: `/favicon.png`,
         siteLanguage: `en`,
         themeColor: `#8257E6`,
         basePath: `/`,
@@ -17,7 +17,7 @@ module.exports = {
             options: {
                 configPath: `src/config`,
                 docsPath: `src/docs`,
-                githubUrl: `https://github.com/jgarrow/graphql-server-pokeapi/docs`,
+                githubUrl: `https://github.com/jgarrow/graphql-server-pokeapi`,
                 baseDir: `docs`,
             },
         },
@@ -43,7 +43,7 @@ module.exports = {
         {
             resolve: `gatsby-plugin-canonical-urls`,
             options: {
-                siteUrl: `https://rocketdocs.netlify.com`,
+                siteUrl: `https://dex-docs.netlify.app`,
             },
         },
         `gatsby-plugin-offline`,
