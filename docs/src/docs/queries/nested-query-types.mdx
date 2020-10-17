@@ -3,15 +3,7 @@ title: Nested Query Types
 description: Query schemas for types that are utilized inside of other queries
 ---
 
-<!--
-DexEntry
-Dominant_Color
-EvolutionCriteria
-Gender
-MoveLearnMethod
-Stats
-OtherEvolutionCriteria
- -->
+import { Link } from 'gatsby';
 
 ## Fields for the `Pokemon` type
 
@@ -19,10 +11,10 @@ OtherEvolutionCriteria
 
 When querying for a `Pokemon` type, requesting the field `pokedex_entries` returns an array of `DexEntry` objects.
 
-| Field Name  | Arguments | Return type   | Description                                                        |
-| ----------- | --------- | ------------- | ------------------------------------------------------------------ |
-| description | --        | String        | Returns the Pokédex entry for the requested Pokémon                |
-| game        | --        | [Game](#game) | Returns a `Game` type for the game that this Pokédex entry is from |
+| Field Name  | Arguments | Return type                                       | Description                                                        |
+| ----------- | --------- | ------------------------------------------------- | ------------------------------------------------------------------ |
+| description | --        | String                                            | Returns the Pokédex entry for the requested Pokémon                |
+| game        | --        | <Link to="/queries/base-queries#game">Game</Link> | Returns a `Game` type for the game that this Pokédex entry is from |
 
 #### Example
 
@@ -105,10 +97,10 @@ When querying for a `Pokemon` type, requesting the field `dominant_color` return
 
 When querying for a `Pokemon` type, requesting the field `evolution_criteria` returns an `EvolutionCriteria` object. `EvolutionCriteria` is a [union](https://graphql.org/learn/schema/#union-types) of the following different types:
 
--   [Move](#move)
--   [Item](#item)
--   [Type](#type)
--   [Location](#location)
+-   <Link to="/queries/base-queries#move">Move</Link>
+-   <Link to="/queries/base-queries#item">Item</Link>
+-   <Link to="/queries/base-queries#type">Type</Link>
+-   <Link to="/queries/base-queries#location">Location</Link>
 -   [Gender](#gender)
 -   [OtherEvolutionCriteria](#otherevolutioncriteria)
 
@@ -163,14 +155,74 @@ When querying for a `Pokemon` type, requesting the field `base_stats` returns a 
 }
 ```
 
+## Fields for the `Move` type
+
+### MoveLearnMethod
+
+When querying for a `Pokemon` type and requesting the field `moves`, requesting the field `learn_methods` returns an array of `MoveLearnMethod` objects.
+
+| Field Name       | Arguments | Return type                                       | Description                                                                                         |
+| ---------------- | --------- | ------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| method           | --        | String                                            | Returns the name of the method by which the Pokémon learns the move (i.e. machine, tutor, level-up) |
+| level_learned_at | --        | Integer                                           | Returns the level the Pokémon learns the move if `method` is "level-up"                             |
+| games            | --        | <Link to="/queries/base-queries#game">Game</Link> | Returns an array of `Game` objects for the games in which the Pokémon learns the move               |
+
+#### Example
+
+```graphql title=query lineNumbers=true
+{
+    pokemon(id: 5) {
+        name
+        moves(game: "red") {
+            name
+            learn_methods {
+                method
+                level_learned_at
+            }
+        }
+    }
+}
+```
+
+```json title=result lineNumbers=true
+// shortened `moves` array shortened for brevity
+{
+    "data": {
+        "pokemon": {
+            "name": "charmeleon",
+            "moves": [
+                {
+                    "name": "Mega Punch",
+                    "learn_methods": [
+                        {
+                            "method": "machine",
+                            "level_learned_at": 0
+                        }
+                    ]
+                },
+                {
+                    "name": "Scratch",
+                    "learn_methods": [
+                        {
+                            "method": "level-up",
+                            "level_learned_at": 1
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}
+```
+
 ## Fields for the `EvolutionCriteria` type
 
 `EvolutionCriteria` is a [union](https://graphql.org/learn/schema/#union-types) of the following different types:
 
--   [Move](#move)
--   [Item](#item)
--   [Type](#type)
--   [Location](#location)
+-   <Link to="/queries/base-queries#move">Move</Link>
+-   <Link to="/queries/base-queries#item">Item</Link>
+-   <Link to="/queries/base-queries#type">Type</Link>
+-   <Link to="/queries/base-queries#location">Location</Link>
 -   [Gender](#gender)
 -   [OtherEvolutionCriteria](#otherevolutioncriteria)
 
