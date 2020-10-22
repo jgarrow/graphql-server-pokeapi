@@ -187,7 +187,7 @@ class Database extends SQLDataSource {
     async getSinglePokemonDominantColor(pokemonId) {
         try {
             const rgbValues = await ColorThief.getColor(
-                `https://raw.githubusercontent.com/jgarrow/graphql-server-pokeapi/master/src/img/${pokemonId}.png`
+                `https://raw.githubusercontent.com/jgarrow/graphql-server-pokeapi/master/server/src/img/${pokemonId}.png`
             );
 
             const color = rgbValues
