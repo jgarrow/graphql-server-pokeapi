@@ -11,6 +11,17 @@ Let's start by cloning the GitHub repo and downloading it to your local machine.
 
 ```bash
 git clone https://github.com/jgarrow/graphql-server-pokeapi
+cd graphql-server-pokeapi
+```
+
+3. You have a couple of options here. The repo from GitHub is a monorepo that contains both files for this documentation site (`/docs`) and the files for the actual server (`/server`).
+
+-   If you don't want the documentation site files, you can delete the entire `/docs` folder located at the root of the repo. Move the contents of `/server` out into the root and delete the `/server` folder so that everything is at the root level. Then you can continue on to step 3.
+-   If you want to keep the documentation site, navigate to the `/server` directory before moving on to step 3.
+
+```bash
+# if you're keeping the documentation site, navigate to the `/server` directory before install the dependencies
+cd server
 ```
 
 3. Install the dependencies:
