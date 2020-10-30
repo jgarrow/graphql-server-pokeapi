@@ -3,7 +3,23 @@ title: Manual Database Changes
 description: To fix an issue in the original database, we need to update our own SQLite3 database ourselves
 ---
 
+\*\*This post assumes a basic knowledge of SQL
+
 [PokéAPI](https://github.com/PokeAPI/pokeapi) typically relies on [Veekun](https://github.com/veekun/pokedex) for the data, but since no data for the Let's Go or Sword/Shield games has been added, PokéAPI has begun to gradually add the data from those games themselves. As a result, the data for those games in this database are still partial and incomplete.
+
+## Using SQLiteStudio
+
+For the SQL queries, I used [SQLiteStudio](https://sqlitestudio.pl/), a free desktop application for browsing and editing SQLite database files. If you choose to go this route, you'll need to make sure you have SQLiteStudio installed.
+
+1. Open a new database by clicking on the "Add a database" button (you might have to hover over the icons to see the labels).
+2. Make sure the "Database Type" is set to `SQLite 3`.
+3. For the "File" input, click on the folder icon to browse your computer for an existing database file. Navigate to the `db.sqlite3` file that you're using for your server.
+4. Optionally give the database a "name" input. This will just be the name that it's under in the SQLiteStudio sidebar.
+5. Click "OK"
+
+You can explore the tables by clicking on the drop down arrows for the database you just opened in SQLiteStudio. To make a query, click on the "Open SQL Editor" button. Now you can write your SQL queries! Click on the "Play" icon to run them.
+
+## Database updates we need to make
 
 With the updates from Let's Go and Sword/Shield, I found that trying to fetch the different Pokédex entry descriptions, or "flavor text" were missing some important information for tying the entry to its associated Pokémon. Instead, the entries are tied to a Pokémon _species_. The issue arises for Pokémon species who have multiple different forms (i.e. mega evolutions, Alolan forms, etc). While they all have their own unique Pokémon ids, they all share the same Pokémon species id. Hence when trying to retrieve the Pokédex entries for, say, Alolan Raichu, you will get back all of the entries for both Kantonian Raichu _and_ Alolan Raichu, with no way to differentiate which entry is for which form.
 
@@ -26,7 +42,7 @@ WHERE
                 );
 ```
 
-2. Manually update the `pokemon_id` entries for the entries that belong to an alternate form instead of the default form. You can use this query to grab all of the English "flavor texts" based on the `pokemon_species_id`. Then you can manually update the `pokemon_id` entries in the necessary rows.
+2. Manually update the `pokemon_id` entries for the entries that belong to an alternate form instead of the default form. You can use this query below to grab all of the English "flavor texts" based on the `pokemon_species_id`. Then you can manually update the `pokemon_id` entries in the necessary rows.
 
 ```sql lineNumbers=true
 SELECT * FROM pokemon_v2_pokemonspeciesflavortext as ft
