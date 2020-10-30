@@ -4,6 +4,8 @@
   link: '/'
 - label: 'Getting started'
   link: '/getting-started'
+- label: 'GraphQL Playground'
+  link: '/playground'
 - label: Queries
   items:
       - label: 'Base queries'
