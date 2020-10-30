@@ -4,9 +4,16 @@ description: How to clone and update the database for your own server
 disableTableOfContents: true
 ---
 
-This server uses a SQLite3 database created from the [PokéAPI GitHub repo](https://github.com/PokeAPI/pokeapi). If you would like to clone your own database to host your own server, here are some steps:
+This server uses a SQLite3 database created from the [PokéAPI GitHub repo](https://github.com/PokeAPI/pokeapi). If you would like to grab the most up-to-date database or clone your own to host your own server, you'll need to have Python3 installed. If you don't have it already, you can find the download on the [Python website](https://www.python.org/downloads/).
 
-1. Clone the PokéAPI repo to your computer and open it up in your code editor
+Here are some steps if following the instructions on the [PokéAPI GitHub repo](https://github.com/PokeAPI/pokeapi) are unclear or aren't working:
+
+1. Clone the [PokéAPI repo](https://github.com/PokeAPI/pokeapi) to your computer and open it up in your code editor
+
+```bash
+git clone https://github.com/PokeAPI/pokeapi.git
+```
+
 2. \*\*Skip this step if your `pip` and `python` commands are already running on `pip3` and `python3` respectively. If not, you might have to update the scripts -- navigate to `Makefile` at the root of the project. Here, we're going to update all of the script commands to use `pip3` instead of `pip` so that we can use Python3. The updated file should look like this:
 
 ```makefile lineNumbers=true
@@ -72,4 +79,4 @@ from data.v2.build import build_all
 build_all()
 ```
 
-6. The database will be found in the root of the project as `db.sqlite3`. You can now move this database file to your GraphQL Pokédex Server repo!
+6. The database will be found in the root of the project as `db.sqlite3`. You can now move this database file to your GraphQL Pokédex Server repo! Just replace the `db.sqlite3` file in the server repo (`src/data`) with your new one.
