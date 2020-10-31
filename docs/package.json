@@ -6,6 +6,7 @@
     "license": "MIT",
     "starter-name": "gatsby-starter-rocket-docs",
     "dependencies": {
+        "@loadable/component": "^5.14.1",
         "@rocketseat/gatsby-theme-docs": "^2.2.3",
         "fontsource-open-sans": "^3.0.9",
         "fontsource-source-code-pro": "^3.0.10",

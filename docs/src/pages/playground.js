@@ -1,16 +1,28 @@
 import React from 'react';
 import { Provider } from 'react-redux';
-import { Playground, store } from 'graphql-playground-react';
+import loadable from '@loadable/component';
 
-const GraphqlPlayground = () => (
-    <Playground endpoint="https://dex-server.herokuapp.com/" setTitle={false} />
+// import via loadable because graphql-playground-react relies on the `window` object being available, which causes the build to crash since `window` is not available during SSR
+const GraphqlPlayground = loadable.lib(() =>
+    import('graphql-playground-react')
 );
 
 const GqlPlayground = () => {
     return (
-        <Provider store={store}>
-            <GraphqlPlayground />
-        </Provider>
+        <>
+            <GraphqlPlayground>
+                {({ Playground, store }) => {
+                    return (
+                        <Provider store={store}>
+                            <Playground
+                                endpoint="https://dex-server.herokuapp.com/"
+                                setTitle={false}
+                            />
+                        </Provider>
+                    );
+                }}
+            </GraphqlPlayground>
+        </>
     );
 };
 
