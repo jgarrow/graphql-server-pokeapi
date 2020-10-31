@@ -3,6 +3,12 @@ title: 'Getting started'
 description: Learn how to get started with your own GraphQL Pokédex server.
 ---
 
+import { Link } from 'gatsby';
+import pokeapi_graphql_docs_gif from '../assets/pokeapi_graphql_docs_gif.gif';
+import pokeapi_graphql_schema_gif from '../assets/pokeapi_graphql_schema_gif.gif';
+
+## Setting up your own server
+
 Let's start by cloning the GitHub repo and downloading it to your local machine.
 
 1. Navigate to [https://github.com/jgarrow/graphql-server-pokeapi](https://github.com/jgarrow/graphql-server-pokeapi). Click on the green `Code` button in the upper righthand corner and copy the HTTPS url to your clipboard.
@@ -43,3 +49,23 @@ npm run server
 ```
 
 5. Navigate to [http://localhost:4000/](http://localhost:4000/) and start querying!
+
+## Schema and docs
+
+You can find documentation about the schema and query fields at <Link to="/queries/base-queries">Base queries</Link> and <Link to="/queries/nested-query-types">Nested query types</Link>.
+
+You can also check out the "Schema" and "Docs" tabs in the <Link to="/playground">GraphQL playground</Link>
+
+### GraphQL playground schema tab
+
+<img
+    src={pokeapi_graphql_schema_gif}
+    alt="Gif showing the schema tab in the GraphQL Playground"
+/>
+
+### GraphQL playground docs tab
+
+<img
+    src={pokeapi_graphql_docs_gif}
+    alt="Gif showing the docs tab in the GraphQL Playground"
+/>

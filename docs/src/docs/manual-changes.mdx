@@ -19,7 +19,7 @@ For the SQL queries, I used [SQLiteStudio](https://sqlitestudio.pl/), a free des
 
 You can explore the tables by clicking on the drop down arrows for the database you just opened in SQLiteStudio. To make a query, click on the "Open SQL Editor" button. Now you can write your SQL queries! Click on the "Play" icon to run them.
 
-## Database updates we need to make
+## Database updates to make
 
 With the updates from Let's Go and Sword/Shield, I found that trying to fetch the different Pokédex entry descriptions, or "flavor text" were missing some important information for tying the entry to its associated Pokémon. Instead, the entries are tied to a Pokémon _species_. The issue arises for Pokémon species who have multiple different forms (i.e. mega evolutions, Alolan forms, etc). While they all have their own unique Pokémon ids, they all share the same Pokémon species id. Hence when trying to retrieve the Pokédex entries for, say, Alolan Raichu, you will get back all of the entries for both Kantonian Raichu _and_ Alolan Raichu, with no way to differentiate which entry is for which form.
 
