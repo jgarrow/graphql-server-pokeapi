@@ -9,38 +9,63 @@ const typeDefs = gql`
         | Gender
         | OtherEvolutionCriteria
 
-    type Pokemon { # query with info wanted for my pokedex for individual Pokemon info
-        sprites: Sprites # array of Sprite objects
-        pokedex_entries: [DexEntry] # array of DexEntry objects
+    """
+    query for an individual Pokemon's info
+    """
+    type Pokemon { 
+        "array of Sprite objects"
+        sprites: Sprites 
+        "array of DexEntry objects"
+        pokedex_entries: [DexEntry] 
+        "array of all criteria that must be met for the queried Pokemon to evolve"
         evolution_criteria(game: String): [EvolutionCriteria]
+        "what triggers the queried Pokemon to evolve if all evolution criteria have been met"
         evolution_trigger: String
+        "array of Pokemon that the queried Pokemon can evolve into"
         evolves_to: [Pokemon]
+        "Pokemon that the queried Pokemon evolves from"
         evolves_from: Pokemon
-        moves(game: String!): [Move] # array of Move objects
+        "array of Move objects"
+        moves(game: String!): [Move] 
+        "array of Games that the queried Pokemon is found in"
         games: [Game]
-        locations: [Location] # array of Location objects
-        abilities(game: String): [Ability] # array of Ability objects
+        "array of Locations that the queried Pokemon can be found in"
+        locations: [Location] 
+        "array of Abilities that the queried Pokemon can have"
+        abilities(game: String): [Ability] 
+        "array of the different EggGroups that the queried Pokemon belongs to"
         egg_groups: [EggGroup]
-        types: [Type] # array of Type objects
-        gender_rate: Float # percent chance of this Pokémon being female; or -1 for genderless
+        "array of all the different Types of the queried Pokemon"
+        types: [Type]
+        "percent chance of the queried Pokémon being female (-1 for genderless)"
+        gender_rate: Float 
+        "base stats of the queried Pokemon"
         base_stats: Stats
         genus: String
+        "which generation the queried Pokemon debuted in"
         generation: String
         is_baby: Boolean
         base_experience: Int
         id: Int # want the number that is used for the pokemon endpoint
         name: String
         nat_dex_num: Int
-        height: Int # height in decimeters
-        weight: Int # weight in hectograms
+        "height in meters"
+        height: Int 
+        "weight in kilograms"
+        weight: Int 
+        "basic color of the queried Pokemon"
         color: String
-        dominant_color: Dominant_Color # dominant color of pokemon image taken from ColorThief to set background color in front end
+        "dominant color of the queried Pokemon's image"
+        dominant_color: Dominant_Color
+        "capture rate of the queried Pokemon when using a normal Pokeball at full health"
         capture_rate: Int
         growth_rate: String
         shape: String
         base_happiness: Int
         hatch_counter: Int
-        is_default: Boolean # True if it's the default form, False if it's a variant (i.e. alola, galar, mega, etc)
+        "true if it's the default form, false if it's a variant (i.e. alola, galar, mega, etc)"
+        is_default: Boolean 
+        "array of different variant forms of the queried Pokemon"
         variants: [Pokemon]
     }
 
@@ -53,23 +78,35 @@ const typeDefs = gql`
         b: Int
     }
 
-    type Type { # Pokemon type (i.e. Grass, Electric, Water, etc)
+    """
+    Pokemon type (i.e. Grass, Electric, Water, etc)
+    """
+    type Type {
         name: String
         id: Int
+        "array of super effective Types that the queried type receives double damage from"
         double_damage_from: [Type]
+        "array of Types the queried type inflicts double damage upon"
         double_damage_to: [Type]
+        "array of not very effective Types the queried type receives half damage from"
         half_damage_from: [Type]
+        "array of Types the queried type inflicts double damage upon"
         half_damage_to: [Type]
+        "array of ineffective Types the queried type receives no damage from"
         no_damage_from: [Type]
+        "array of Types the queried type inflicts no damage upon"
         no_damage_to: [Type]
+        "array of Pokemon that have the queried Type"
         pokemon: [Pokemon]
+        "Use in an evolution_criteria query; returns the name of the evolution criteria that must have been met for the queried Pokémon to have evolved"
         evolution_criteria_name: String
     }
 
     type EggGroup {
         id: Int
         name: String
-        pokemon: [Pokemon] # array of pokemon in this egg group
+        "array of Pokemon in the queried egg group"
+        pokemon: [Pokemon] 
     }
 
     type Ability {
@@ -78,6 +115,7 @@ const typeDefs = gql`
         is_hidden: Boolean
         effect: String
         description: String
+        "array of Pokemon that can have the queried Ability"
         pokemon: [Pokemon]
     }
 
@@ -93,8 +131,10 @@ const typeDefs = gql`
     }
 
     type OtherEvolutionCriteria {
-        evolution_criteria_name: String # time_of_day
-        value: String # night
+        "example response: time_of_day"
+        evolution_criteria_name: String 
+        "example response: night"
+        value: String 
     }
 
     type Stats {
@@ -108,31 +148,33 @@ const typeDefs = gql`
 
     type DexEntry {
         description: String
-        game: Game # game/version this entry is from
+        "game/version the queried DexEntry is from"
+        game: Game
     }
 
     type Move {
         id: Int
         name: String
         type: Type
-        learn_methods: [MoveLearnMethod] # level, egg, move tutor, tm/hm
-        # learn_method: String
-        # level_learned_at: Int
+        "level, egg, move tutor, tm/hm"
+        learn_methods: [MoveLearnMethod]
         power: Int
         accuracy: Int
         pp: Int
         priority: Int
         ailment: String
         effect_chance: Int
-        effect: String # possible status condition effect
-        damage_class: String # physical or special
+        "possible status condition effect"
+        effect: String
+        "physical or special"
+        damage_class: String
         description: String
-        # description: MoveDescription
         original_games: [Game]
         evolution_criteria_name: String
     }
 
     type MoveLearnMethod {
+        "how the Pokemon learns the queried Move"
         method: String
         level_learned_at: Int
         games: [Game]
@@ -148,14 +190,18 @@ const typeDefs = gql`
         name: String
         region: Region
         evolution_criteria_name: String
-        games: [Game] # which game/version pokemon is found at this location
-        pokemon: [Pokemon] # array of pokemon that can be found at this location
+        "array of games/versions in which pokemon are found at the queried Location"
+        games: [Game]
+        "array of Pokemon that can be found at the queried Location"
+        pokemon: [Pokemon]
     }
 
     type Region {
         id: Int
         name: String
+        "array of Games the queried Region is found in"
         games: [Game]
+        "array of Locations that are in the queried Region"
         locations: [Location]
     }
 
@@ -163,6 +209,7 @@ const typeDefs = gql`
         id: Int
         name: String
         generation: String
+        "array of Regions that are found in the queried Game"
         regions: [Region]
     }
 
@@ -174,6 +221,7 @@ const typeDefs = gql`
     type Item {
         id: Int
         name: String
+        "Use in an evolution_criteria query; returns the name of the evolution criteria that must have been met for the Pokémon to have evolved"
         evolution_criteria_name: String
         effect: String
         description: String
@@ -186,11 +234,13 @@ const typeDefs = gql`
     type Gender {
         id: Int
         name: String
+        "Use in an evolution_criteria query; returns the name of the evolution criteria that must have been met for the Pokémon to have evolved"
         evolution_criteria_name: String
     }
 
     type Query {
-        allPokemon(limit: Int, filter: Boolean): [Pokemon] # get range of pokemon starting from start variable
+        "get range of Pokemon starting from start variable"
+        allPokemon(limit: Int, filter: Boolean): [Pokemon]
         allAbilities: [Ability]
         allTypes(start: Int, end: Int): [Type]
         allEggGroups: [EggGroup]
@@ -199,8 +249,6 @@ const typeDefs = gql`
         allRegions: [Region]
         allGames: [Game]
         allItems: [Item]
-        # game(name: String!): [Pokemon] # get pokemon from a specific game
-        # generation(generationNumber: Int!): [Pokemon] # get pokemon from specific generation regardless of game
         pokemon(id: Int!): Pokemon
         ability(id: Int!, game: String): Ability
         type(id: Int!): Type
