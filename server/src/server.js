@@ -1,5 +1,5 @@
 const { ApolloServer } = require('apollo-server');
-const { typeDefs } = require('./schema/schema');
+const { typeDefs } = require('./schema');
 const { resolvers } = require('./resolvers');
 const PokemonDatabase = require('./datasources/pokemon')
 const GenderDatabase = require('./datasources/gender')
