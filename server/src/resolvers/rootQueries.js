@@ -4,10 +4,10 @@ const rootQueryResolvers = {
             return dataSources.pokemonDb.getAllPokemonIds(args.limit, args.filter);
         },
         allAbilities: (_, __, { dataSources }) => {
-            return dataSources.db.getAllAbilityIds();
+            return dataSources.abilitiesDb.getAllAbilityIds();
         },
         allTypes: async (_, __, { dataSources }) => {
-            const typeIds = await dataSources.db.getAllTypeIds();
+            const typeIds = await dataSources.typesDb.getAllTypeIds();
             return typeIds.map((type) => {
                 return {
                     typeId: type,
@@ -15,10 +15,10 @@ const rootQueryResolvers = {
             });
         },
         allEggGroups: (_, __, { dataSources }) => {
-            return dataSources.db.getAllEggGroupIds();
+            return dataSources.eggGroupsDb.getAllEggGroupIds();
         },
         allLocations: async (_, __, { dataSources }) => {
-            const locationIds = await dataSources.db.getAllLocationIds();
+            const locationIds = await dataSources.locationsDb.getAllLocationIds();
             return locationIds.map((location) => {
                 return {
                     locationId: location,
@@ -26,7 +26,7 @@ const rootQueryResolvers = {
             });
         },
         allMoves: async (_, __, { dataSources }) => {
-            const moveIds = await dataSources.db.getAllMoveIds();
+            const moveIds = await dataSources.movesDb.getAllMoveIds();
             return moveIds.map((move) => {
                 return {
                     moveId: move,
@@ -34,13 +34,13 @@ const rootQueryResolvers = {
             });
         },
         allRegions: (_, __, { dataSources }) => {
-            return dataSources.db.getAllRegionIds();
+            return dataSources.regionsDb.getAllRegionIds();
         },
         allGames: (_, __, { dataSources }) => {
-            return dataSources.db.getAllGameIds();
+            return dataSources.gamesDb.getAllGameIds();
         },
         allItems: async (_, __, { dataSources }) => {
-            const itemIds = await dataSources.db.getAllItemIds();
+            const itemIds = await dataSources.itemsDb.getAllItemIds();
             return itemIds.map((item) => {
                 return {
                     itemId: item,
