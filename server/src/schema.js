@@ -103,8 +103,6 @@ const typeDefs = gql`
         no_damage_to: [Type]
         "array of Pokemon that have the queried Type"
         pokemon: [Pokemon]
-        "Use in an evolution_criteria query; returns the name of the evolution criteria that must have been met for the queried Pokémon to have evolved"
-        evolution_criteria_name: String
     }
 
     type EggGroup {
@@ -175,7 +173,6 @@ const typeDefs = gql`
         damage_class: String
         description: String
         original_games: [Game]
-        evolution_criteria_name: String
     }
 
     type MoveLearnMethod {
@@ -194,7 +191,6 @@ const typeDefs = gql`
         id: Int
         name: String
         region: Region
-        evolution_criteria_name: String
         "array of games/versions in which pokemon are found at the queried Location"
         games: [Game]
         "array of Pokemon that can be found at the queried Location"
@@ -227,7 +223,6 @@ const typeDefs = gql`
         id: Int
         name: String
         "Use in an evolution_criteria query; returns the name of the evolution criteria that must have been met for the Pokémon to have evolved"
-        evolution_criteria_name: String
         effect: String
         description: String
         cost: Int
@@ -239,8 +234,6 @@ const typeDefs = gql`
     type Gender {
         id: Int
         name: String
-        "Use in an evolution_criteria query; returns the name of the evolution criteria that must have been met for the Pokémon to have evolved"
-        evolution_criteria_name: String
     }
 
     type Query {

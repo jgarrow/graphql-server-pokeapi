@@ -129,19 +129,10 @@ const pokemonResolvers = {
         evolution_trigger: (parent, _, { dataSources }) => {
             return dataSources.pokemonDb.getSinglePokemonEvolutionTrigger(parent);
         },
-        evolution_criteria: async (parent, args, { dataSources }) => {
-            const criteria = await dataSources.pokemonDb.getSinglePokemonEvolutionCriteria(
+        evolution_criteria: (parent, args, { dataSources }) => {
+            return dataSources.pokemonDb.getSinglePokemonEvolutionCriteria(
                 parent
             );
-
-            return criteria
-                ? criteria.map((criteria) => {
-                      return {
-                          ...criteria,
-                          ...args,
-                      };
-                  })
-                : null;
         },
         pokedex_entries: (parent, _, { dataSources }) => {
             return dataSources.pokemonDb.getSinglePokemonPokedexEntries(parent);
