@@ -1,6 +1,9 @@
 const { gql } = require('apollo-server');
 
 const typeDefs = gql`
+    """
+    EvolutionCriteria can be one or more of several possible different types
+    """
     union EvolutionCriteria =
           Move
         | Item
@@ -25,6 +28,8 @@ const typeDefs = gql`
         evolves_to: [Pokemon]
         "Pokemon that the queried Pokemon evolves from"
         evolves_from: Pokemon
+        "the Pokemon at the 'beginning' of the queried Pokemon's evolution chain (i.e. Charmander, even if you requested Charizard)"
+        evolution_chain_start: Pokemon!
         "array of Move objects"
         moves(game: String!): [Move] 
         "array of Games that the queried Pokemon is found in"

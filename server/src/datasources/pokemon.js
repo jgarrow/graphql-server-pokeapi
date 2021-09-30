@@ -636,6 +636,16 @@ class PokemonDatabase extends SQLDataSource {
         return evolvesFromId ? evolvesFromId : null;
     }
 
+    async getLowestEvolutionTier(pokemonId) {
+        const evolves_from = await this.getSinglePokemonEvolvesFromPokemonId(pokemonId);
+
+        if (evolves_from) {
+            return this.getLowestEvolutionTier(evolves_from);
+        }
+
+        return pokemonId;
+    }
+
     async getSinglePokemonEvolvesToPokemonId(pokemonId) {
         // get pokemon who evolves from my current pokemonId
         const queryRes = await this.knex

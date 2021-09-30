@@ -117,6 +117,9 @@ const pokemonResolvers = {
 
             return idsArray;
         },
+        evolution_chain_start: (parent, _, { dataSources} ) => {
+            return dataSources.pokemonDb.getLowestEvolutionTier(parent);
+        },
         evolves_from: (parent, _, { dataSources }) => {
             return dataSources.pokemonDb.getSinglePokemonEvolvesFromPokemonId(parent);
         },
