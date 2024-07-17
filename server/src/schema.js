@@ -236,6 +236,12 @@ const typeDefs = gql`
         name: String
     }
 
+    type Trainer {
+        id: Int
+        name: String
+        party: [Pokemon]
+    }
+
     type Query {
         "get range of Pokemon starting from start variable"
         allPokemon(limit: Int, filter: Boolean): [Pokemon]
@@ -254,8 +260,14 @@ const typeDefs = gql`
         location(id: Int!): Location
         move(id: Int!): Move
         region(id: Int!): Region
-        game(id: Int): Game
-        item(id: Int): Item
+        game(id: Int!): Game
+        item(id: Int!): Item
+        trainer(id: Int!): Trainer
+    }
+
+    type Mutation {
+        addPokemonToParty(trainerId: Int!, pokemonId: Int!): Pokemon
+        removePokemonFromParty(trainerId: Int!, pokemonId: Int!): Pokemon
     }
 `;
 
