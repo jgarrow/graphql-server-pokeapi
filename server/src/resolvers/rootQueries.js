@@ -58,6 +58,17 @@ const rootQueryResolvers = {
         eggGroup: (_, args) => args.id,
         ability: (_, args) => {
             return { abilityId: args.id };
+        },
+        trainer: (_, args) => {
+            return args.id
+        }
+    },
+    Mutation: {
+        addPokemonToParty: (_, args, { dataSources }) => {
+            return dataSources.trainersDb.addPokemonToParty(args.trainerId, args.pokemonId);
+        },
+        removePokemonFromParty: (_, args, { dataSources }) => {
+            return dataSources.trainersDb.removePokemonFromParty(args.trainerId, args.pokemonId)
         }
     }
 }
