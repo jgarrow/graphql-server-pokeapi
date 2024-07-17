@@ -11,6 +11,7 @@ const LocationDatabase = require('./datasources/locations')
 const TypeDatabase = require('./datasources/types')
 const AbilityDatabase = require('./datasources/abilities')
 const EggGroupDatabase = require('./datasources/eggGroups');
+const TrainerDatabase = require('./datasources/trainers')
 
 // TODO:
 // separate ID's for alternate forms
@@ -41,7 +42,8 @@ const createLocalServer = () =>
             locationsDb: new LocationDatabase(knexConfig),
             typesDb: new TypeDatabase(knexConfig),
             abilitiesDb: new AbilityDatabase(knexConfig),
-            eggGroupsDb: new EggGroupDatabase(knexConfig)
+            eggGroupsDb: new EggGroupDatabase(knexConfig),
+            trainersDb: new TrainerDatabase(knexConfig)
          }),
         introspection: true,
         playground: true,

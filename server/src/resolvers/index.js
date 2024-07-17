@@ -8,6 +8,7 @@ const { locationResolvers } = require('./locations')
 const { gameResolvers } = require('./games')
 const { regionResolvers } = require('./regions')
 const { typeResolvers } = require('./types')
+const { trainerResolvers } = require('./trainers')
 
 const resolvers = {
     ...rootQueryResolvers,
@@ -20,6 +21,7 @@ const resolvers = {
     ...gameResolvers,
     ...regionResolvers,
     ...typeResolvers,
+    ...trainerResolvers,
     DexEntry: {
         game: (parent) => parent.gameId,
     },
