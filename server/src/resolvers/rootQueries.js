@@ -68,7 +68,10 @@ const rootQueryResolvers = {
             return dataSources.trainersDb.addPokemonToParty(args.trainerId, args.pokemonId);
         },
         removePokemonFromParty: (_, args, { dataSources }) => {
-            return dataSources.trainersDb.removePokemonFromParty(args.trainerId, args.pokemonId)
+            return dataSources.trainersDb.removePokemonFromParty(args.trainerId, args.pokemonId);
+        },
+        editTrainerName: (_, args, { dataSources }) => {
+            return dataSources.trainersDb.editTrainerName(args.trainerId, args.name);
         }
     }
 }

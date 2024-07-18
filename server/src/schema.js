@@ -268,6 +268,7 @@ const typeDefs = gql`
     type Mutation {
         addPokemonToParty(trainerId: Int!, pokemonId: Int!): Pokemon
         removePokemonFromParty(trainerId: Int!, pokemonId: Int!): Pokemon
+        editTrainerName(trainerId: Int!, name: String!): Trainer
     }
 `;
 

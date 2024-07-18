@@ -1,7 +1,5 @@
 const { SQLDataSource } = require('datasource-sql');
 
-const MINUTE = 60 * 10000;
-
 class TrainerDatabase extends SQLDataSource {
   async getTrainerName(trainerId) {
     const queryRes = await this.knex
@@ -9,9 +7,18 @@ class TrainerDatabase extends SQLDataSource {
       .select('t.name')
       .from('trainers as t')
       .where('t.id', trainerId)
-      .cache(MINUTE)
 
     return queryRes ? queryRes.name : null;
+  }
+
+  async editTrainerName(trainerId, name) {
+    const queryRes = await this.knex
+      .update({ name })
+      .from('trainers')
+      .where('id', trainerId)
+      .returning('*')
+
+    return queryRes[0] ? queryRes[0].id : null;
   }
 
   async getParty(trainerId) {
@@ -19,7 +26,6 @@ class TrainerDatabase extends SQLDataSource {
       .select('p.pokemonId')
       .from('party as p')
       .where('p.trainerId', trainerId)
-      .cache(MINUTE)
 
     const pokemonIds = queryRes.map((partyRow) => partyRow.pokemonId);
 
